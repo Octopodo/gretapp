@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { computed } from 'vue'
 import BoardSquare from './board-square.vue'
 
 const emit = defineEmits(['board-completed', 'square-touched'])
@@ -34,7 +34,7 @@ const squareSize = computed(() => 30)
 const cols = computed(() => Number(props.cols))
 const rows = computed(() => Number(props.rows))
 const boardWidth = computed(() => `${squareSize.value * cols.value}px`)
-const boardHeight = computed(() => `${squareSize.value * rows.value}px`)
+// const boardHeight = computed(() => `${squareSize.value * rows.value}px`)
 
 const gridTemplateColumns = computed(() => `repeat(${cols.value}, 1fr)`)
 const gridTemplateRows = computed(() => `repeat(${rows.value}, 1fr)`)

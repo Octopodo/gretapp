@@ -1,37 +1,27 @@
 <template>
-  <div>
+  <div class="board-loader">
     <span v-if="!loaded"> <h1>Loading</h1></span>
-    <board v-else v-for="(image, index) in images" :key="index" />
+    <game-board
+      v-else
+      v-for="(image, index) in images"
+      :key="index"
+      :image="image"
+      :src="image.url"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
-import {
-  useLoadImages,
-  useRandomImagesUnique,
-  useSetCanvasSize,
-  type ImageData
-} from '@/composables'
+import { ref, watch } from 'vue'
+import { useLoadImages, useRandomImagesUnique, useSetCanvasSize } from '@/composables'
 import { configStore } from '@/stores/configStore'
 
-import Board from '@/components/board/board.vue'
+import GameBoard from '@/components/board/game-board.vue'
 
 const config = configStore()
 
 const imageData = useRandomImagesUnique(config.imageCount)
 const { loaded, images } = useLoadImages(imageData)
-const boardCols = ref(0)
-const boardRows = ref(0)
-
-// watch(loaded, (value) => {
-//   if (value) {
-//     const { cols, rows, width, height } = useSetCanvasSize(
-//       images.value[0].width,
-//       images.value[0].height
-//     )
-//   }
-// })
 </script>
 
 <style scoped></style>
