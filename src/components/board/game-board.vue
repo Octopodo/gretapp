@@ -1,19 +1,18 @@
 <template>
-  <div class="board">
-    <board-image :src="src" :width="width" :height="height" />
-    <div class="board">
-      <board-grid
-        :cols="cols"
-        :rows="rows"
-        :src="src"
-        :victory="victory"
-        :squareColor="squareColor"
-        :square-count="squareCount"
-        :blockBoard="blockBoard"
-        @board-completed="boardCompleted"
-        @square-touched="squareTouched"
-      />
-    </div>
+  <div class="board-container">
+    <board-image class="board-element" :src="imageData.url" :width="width" :height="height" />
+
+    <board-grid
+      class="board-element"
+      :cols="cols"
+      :rows="rows"
+      :victory="victory"
+      :squareColor="squareColor"
+      :square-count="squareCount"
+      :blockBoard="blockBoard"
+      @board-completed="boardCompleted"
+      @square-touched="squareTouched"
+    />
   </div>
 </template>
 
@@ -27,28 +26,35 @@ import BoardImage from './board-image.vue'
 
 const config = configStore()
 
+const emit = defineEmits(['board-completed', 'square-touched'])
 const props = defineProps({
-  image: { type: Object as PropType<ImageData>, required: true },
-  src: { type: String, required: true },
+  imageData: { type: Object as PropType<ImageData>, required: true },
   victory: { type: Number, default: 15 }
 })
-
+const progress = computed(() => {
+  const prog = (squaresTouched.value / squaresToWin.value) * 100
+  return Number(prog.toFixed(1))
+})
 const squareColor = useRandomColor()
 const completed = ref(false)
 const squaresTouched = ref(0)
 const { width, height, cols, rows } = useSetCanvasSize({
-  width: props.image.width,
-  height: props.image.height,
+  width: props.imageData.width,
+  height: props.imageData.height,
   maxWidth: config.playgroundWidth,
   maxHeight: config.playgroundHeight,
   resolution: config.gridResolution
 })
 const squareCount = computed(() => rows.value * cols.value)
-const progress = computed(() => {
+const squaresToWin = computed(() => {
+  return Math.ceil((props.victory / 100) * squareCount.value)
+})
+
+const rawProgress = computed(() => {
   const prog = (squaresTouched.value / squareCount.value) * 100
   return Number(prog.toFixed(1))
 })
-const blockBoard = computed(() => false)
+const blockBoard = ref(false)
 
 function squareTouched(event: number) {
   squaresTouched.value++
@@ -59,14 +65,22 @@ function boardCompleted() {
 }
 
 watch(progress, (value) => {
-  if (value >= props.victory) {
+  if (value >= 100) {
+    blockBoard.value = true
     completed.value = true
+    emit('board-completed')
   }
 })
 </script>
 
 <style scoped>
-.board {
+.board-container {
+  display: block;
   position: relative;
+  width: 100%;
+  height: 100%;
+}
+.board-element {
+  position: absolute;
 }
 </style>

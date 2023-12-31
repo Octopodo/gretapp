@@ -1,6 +1,6 @@
 <template>
   <div class="art-piece">
-    <img ref="srcImage" :src="src" alt="" :width="width" :height="height" />
+    <img ref="srcImage" :src="src" alt="" :style="sizeStyle" />
   </div>
 </template>
 
@@ -12,10 +12,11 @@ const props = defineProps({
   width: { type: Number, required: true },
   height: { type: Number, required: true }
 })
+
+const sizeStyle = computed(() => ({
+  width: `${props.width}px`,
+  height: `${props.height}px`
+}))
 </script>
 
-<style scoped>
-.art-piece {
-  position: absolute;
-}
-</style>
+<style scoped></style>
