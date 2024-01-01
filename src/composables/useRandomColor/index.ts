@@ -19,11 +19,9 @@ const colorList = [
   '#FF3D00', // DEEP ORANGE
   '#5D4037', // BROWN
   '#424242' // DARKEN
-
 ]
 
-export function useRandomColor () {
-  console.log('Calling random  color')
+export function useRandomColor() {
   const max = colorList.length - 1
   const randomIndex = useRandomIntInRange(0, max)
   const color = colorList[randomIndex]
