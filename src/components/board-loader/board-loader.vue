@@ -16,26 +16,27 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch, type Ref } from 'vue'
+import { computed, ref, watchEffect, type Ref } from 'vue'
 import { useLoadImages, useRandomImagesUnique, type ImageData } from '@/composables'
 import { configStore } from '@/stores/configStore'
 import { useCycleList } from '@vueuse/core'
 
 import GameBoard from '@/components/board/game-board.vue'
 
-const config = configStore()
-const imageData = useRandomImagesUnique(config.imageCount)
-const { loaded, images } = useLoadImages(imageData)
-
-const currentProgres = ref(0)
-const gameSpeed = computed(() => config.gameSpeed + 'ms')
 let cycleList
 let next: Function
 let prev: Function
 let state: Ref<ImageData>
 let index: Ref<number>
 
-watch(loaded, () => {
+const config = configStore()
+const imageData = useRandomImagesUnique(config.imageCount)
+const { loaded, images } = useLoadImages(imageData)
+
+const currentProgress = ref(0)
+const gameSpeed = computed(() => config.gameSpeed + 'ms')
+
+watchEffect(() => {
   if (loaded.value) {
     cycleList = useCycleList(images.value)
     next = cycleList.next
@@ -45,10 +46,9 @@ watch(loaded, () => {
   }
 })
 
-function goToNextBoard() {
-  setTimeout(() => {
-    next()
-  }, 500)
+async function goToNextBoard() {
+  await new Promise((resolve) => setTimeout(resolve, 500))
+  next()
 }
 </script>
 
