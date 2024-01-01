@@ -1,5 +1,10 @@
 <template>
-  <div class="board-square-container" :class="{ inactive: touched }" @pointerover="touch()">
+  <div
+    class="board-square-container"
+    :class="{ inactive: touched }"
+    @mouseover="touch"
+    @pointerdown="(e) => touch(e)"
+  >
     <div ref="square" class="board-square"></div>
   </div>
   <!-- <div class="main-board-square">Hola square</div> -->
@@ -25,7 +30,7 @@ const touched = ref(false)
 const size = computed(() => `${props.size}px`)
 const color = computed(() => props.color)
 
-function touch() {
+function touch(event: MouseEvent | PointerEvent) {
   if (props.block || touched.value) return
   touched.value = true
   useAnimateSquare(square.value, props.color)

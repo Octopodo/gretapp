@@ -3,13 +3,16 @@ import { defineStore } from 'pinia'
 export const configStore = defineStore('configStore', {
   state: () => {
     return {
-      devMode: true,
       artPlaceholderUrl: 'https://omnesmag.com/wp-content/uploads/2016/05/vangogh.jpg',
-      imageCount: 10,
+      devMode: true,
+      gameSpeed: 2000,
       gridResolution: 20,
-      playgroundWidth: 700,
+      imageCount: 10,
+      maxScale: 9,
+      minScale: 3,
       playgroundHeight: 700,
-      victoryCondition: 8
+      playgroundWidth: 700,
+      victoryCondition: 10
     }
   }
 })

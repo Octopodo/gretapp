@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, type Ref } from 'vue'
+import { computed, ref, watch, type Ref } from 'vue'
 import { useLoadImages, useRandomImagesUnique, type ImageData } from '@/composables'
 import { configStore } from '@/stores/configStore'
 import { useCycleList } from '@vueuse/core'
@@ -28,7 +28,7 @@ const imageData = useRandomImagesUnique(config.imageCount)
 const { loaded, images } = useLoadImages(imageData)
 
 const currentProgres = ref(0)
-
+const gameSpeed = computed(() => config.gameSpeed + 'ms')
 let cycleList
 let next: Function
 let prev: Function
@@ -66,7 +66,7 @@ function goToNextBoard() {
 .slide-left-leave-active,
 .slide-right-enter-active,
 .slide-right-leave-active {
-  transition: transform 1s;
+  transition: transform v-bind('gameSpeed') ease-in-out;
 }
 
 .slide-left-enter-from {
