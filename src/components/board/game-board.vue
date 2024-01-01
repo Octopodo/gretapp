@@ -10,7 +10,6 @@
       :squareColor="squareColor"
       :square-count="squareCount"
       :blockBoard="blockBoard"
-      @board-completed="boardCompleted"
       @square-touched="squareTouched"
     />
   </div>

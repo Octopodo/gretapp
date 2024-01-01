@@ -1,10 +1,5 @@
 <template>
-  <div
-    class="board-square-container"
-    :class="{ inactive: touched }"
-    @mouseover="touch"
-    @pointerdown="(e) => touch(e)"
-  >
+  <div class="board-square-container" :class="{ inactive: touched }">
     <div ref="square" class="board-square"></div>
   </div>
   <!-- <div class="main-board-square">Hola square</div> -->
@@ -13,15 +8,14 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useAnimateSquare } from '../../composables'
+import { configStore } from '@/stores/configStore'
 
-const emit = defineEmits(['touched'])
+const config = configStore()
 
 const props = defineProps({
   size: { type: [Number, String], required: true },
-  index: { type: Number, required: true },
   color: { type: String, default: '#99ff55' },
-  borderColor: { type: String, default: '#ff5510' },
-  block: { type: Boolean, default: false }
+  borderColor: { type: String, default: '#ff5510' }
 })
 
 const square = ref()
@@ -29,13 +23,7 @@ const touched = ref(false)
 
 const size = computed(() => `${props.size}px`)
 const color = computed(() => props.color)
-
-function touch(event: MouseEvent | PointerEvent) {
-  if (props.block || touched.value) return
-  touched.value = true
-  useAnimateSquare(square.value, props.color)
-  emit('touched', props.index)
-}
+const gridOpacity = computed(() => config.gridOpacity + '%')
 </script>
 
 <style scoped>
@@ -54,7 +42,7 @@ function touch(event: MouseEvent | PointerEvent) {
   height: 10px;
   border-radius: 50%;
   /* filter: blur(01px); */
-  opacity: 0;
+  opacity: v-bind('gridOpacity');
 }
 
 .inactive {

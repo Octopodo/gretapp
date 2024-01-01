@@ -1,16 +1,15 @@
 <template>
-  <div>
+  <div @touchmove.prevent>
     <!-- <board class="main-board" :src="config.artPlaceholderUrl" /> -->
-    <board-loader/>
+    <board-loader />
   </div>
 </template>
 
 <script setup lang="ts">
-import Board from "./components/board/board.vue";
 import BoardLoader from '@/components/board-loader/board-loader.vue'
-import { configStore } from "./stores/configStore";
+import { configStore } from './stores/configStore'
 
-const config = configStore();
+const config = configStore()
 config
 </script>
 

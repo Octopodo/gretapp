@@ -47,7 +47,7 @@ watchEffect(() => {
 })
 
 async function goToNextBoard() {
-  await new Promise((resolve) => setTimeout(resolve, 500))
+  await new Promise((resolve) => setTimeout(resolve, config.pictureChangeDelay))
   next()
 }
 </script>
