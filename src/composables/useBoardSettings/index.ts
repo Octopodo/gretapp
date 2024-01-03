@@ -1,6 +1,22 @@
+import { ref, provide, type Ref } from 'vue'
 import { configStore } from '@/stores/configStore'
-import { useSetCanvasSize } from '@/composables'
+import {
+  useSetCanvasSize,
+  useRandomColor,
+  useRandomImagesUnique,
+  type CanvasSizeOptions
+} from '@/composables'
 
-export function useBoardSettings() {
-  const gameConfig = configStore()
+interface BoardSettingsOptions extends CanvasSizeOptions {
+  count: number | Ref<number>
 }
+
+function useBoardSettingsProvider(options: BoardSettingsOptions) {
+  const gameConfig = configStore()
+
+  const { width, height, cols, rows } = useSetCanvasSize(options)
+  const color = useRandomColor()
+  const images = useRandomImagesUnique({ count: options.count })
+}
+
+export { useBoardSettingsProvider, type BoardSettingsOptions }
