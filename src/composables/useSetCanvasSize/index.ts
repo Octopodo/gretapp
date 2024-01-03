@@ -8,7 +8,7 @@ interface CanvasSizeOptions {
   resolution: number | Ref<number>
 }
 
-export function useSetCanvasSize(options: CanvasSizeOptions) {
+function useSetCanvasSize(options: CanvasSizeOptions) {
   let width = toValue(options.width)
   let height = toValue(options.height)
   let maxWidth = toValue(options.maxWidth)
@@ -39,3 +39,5 @@ export function useSetCanvasSize(options: CanvasSizeOptions) {
 
   return { width: newWidth, height: newHeight, cols, rows }
 }
+
+export { useSetCanvasSize, type CanvasSizeOptions }
