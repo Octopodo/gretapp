@@ -6,23 +6,18 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { useAnimateSquare } from '../../composables'
+import { computed, ref, inject, type Ref } from 'vue'
 import { configStore } from '@/stores/configStore'
 
 const config = configStore()
 
-const props = defineProps({
-  size: { type: [Number, String], required: true },
-  color: { type: String, default: '#99ff55' },
-  borderColor: { type: String, default: '#ff5510' }
-})
+const bubbleColor = inject<Ref<string>>('bubbleColor', ref(''))
+const squareSize = inject<Ref<number>>('squareSize', ref(0))
 
 const square = ref()
 const touched = ref(false)
 
-const size = computed(() => `${props.size}px`)
-const color = computed(() => props.color)
+const size = computed(() => `${squareSize.value}px`)
 const gridOpacity = computed(() => config.gridOpacity + '%')
 </script>
 
@@ -37,7 +32,7 @@ const gridOpacity = computed(() => config.gridOpacity + '%')
 }
 
 .board-square {
-  background-color: v-bind('color');
+  background-color: v-bind('bubbleColor');
   width: 10px;
   height: 10px;
   border-radius: 50%;

@@ -1,6 +1,11 @@
 <template>
   <div class="art-piece">
-    <img ref="srcImage" :src="src" alt="" :style="sizeStyle" />
+    <img
+      alt=""
+      ref="srcImage"
+      :src="src"
+      :style="sizeStyle"
+    />
   </div>
 </template>
 

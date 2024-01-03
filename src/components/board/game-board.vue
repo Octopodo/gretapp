@@ -1,13 +1,17 @@
 <template>
   <div class="board-container">
-    <board-image class="board-element" :src="imageData.url" :width="width" :height="height" />
+    <board-image
+      class="board-element"
+      :src="imageData.url"
+      :width="width"
+      :height="height"
+    />
 
     <board-grid
       class="board-element"
       :cols="cols"
       :rows="rows"
       :victory="victory"
-      :squareColor="squareColor"
       :square-count="squareCount"
       :blockBoard="blockBoard"
       @square-touched="squareTouched"
@@ -18,7 +22,6 @@
 <script setup lang="ts">
 import { ref, computed, watch, type PropType } from 'vue'
 import { useSetCanvasSize, type ImageData } from '@/composables'
-import { useRandomColor } from '@/composables'
 import { configStore } from '@/stores/configStore'
 import BoardGrid from './board-grid.vue'
 import BoardImage from './board-image.vue'
@@ -34,9 +37,10 @@ const progress = computed(() => {
   const prog = (squaresTouched.value / squaresToWin.value) * 100
   return Number(prog.toFixed(1))
 })
-const squareColor = useRandomColor()
+
 const completed = ref(false)
 const squaresTouched = ref(0)
+
 const { width, height, cols, rows } = useSetCanvasSize({
   width: props.imageData.width,
   height: props.imageData.height,
@@ -44,6 +48,7 @@ const { width, height, cols, rows } = useSetCanvasSize({
   maxHeight: config.playgroundHeight,
   resolution: config.gridResolution
 })
+
 const squareCount = computed(() => rows.value * cols.value)
 const squaresToWin = computed(() => {
   return Math.ceil((props.victory / 100) * squareCount.value)
@@ -57,6 +62,7 @@ const blockBoard = ref(false)
 
 function squareTouched(event: number) {
   squaresTouched.value++
+  emit('square-touched')
 }
 
 function boardCompleted() {

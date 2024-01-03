@@ -1,19 +1,20 @@
 <template>
   <div>
-    <div class="board-content" @pointermove.prevent="handlePoinerMove">
+    <div
+      class="board-content"
+      @pointermove.prevent="handlePoinerMove"
+    >
       <board-square
         v-for="(square, index) in squareCount"
         :key="index"
         ref="squares"
-        :color="squareColor"
-        :size="squareSize"
       />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref, inject, onMounted, type Ref } from 'vue'
 import { configStore } from '@/stores/configStore'
 import { useAnimateSquare } from '@/composables'
 import BoardSquare from './board-square.vue'
@@ -26,11 +27,11 @@ const props = defineProps({
   rows: { type: Number, default: 18 },
   squareCount: { type: Number, required: true },
   victory: { type: Number, default: 15 },
-  squareColor: { type: String, default: '#99ff55' },
   blockBoard: { type: Boolean, default: true }
 })
 
-const squareSize = computed(() => config.gridResolution)
+const squareSize = inject<Ref<number>>('squareSize', ref(0))
+const bubbleColor = inject<Ref<string>>('bubbleColor', ref(''))
 const cols = computed(() => Number(props.cols))
 const rows = computed(() => Number(props.rows))
 const boardWidth = computed(() => `${squareSize.value * cols.value}px`)
@@ -41,6 +42,7 @@ const squaresTouched = ref(Array(rows.value * cols.value).fill(false))
 const gridTemplateColumns = computed(() => `repeat(${cols.value}, 1fr)`)
 const gridTemplateRows = computed(() => `repeat(${rows.value}, 1fr)`)
 
+//Move to a composable
 const handlePoinerMove = (event: PointerEvent) => {
   const target = event.currentTarget as Element
   const rect = target.getBoundingClientRect()
@@ -53,10 +55,10 @@ const handlePoinerMove = (event: PointerEvent) => {
 
   const index = row * cols.value + col
   if (squaresTouched.value[index] === false && !props.blockBoard) {
+    emit('square-touched')
     squaresTouched.value[index] = true
     const square = squares.value[index].$refs.square as HTMLElement
-    useAnimateSquare(square, props.squareColor)
-    emit('square-touched')
+    useAnimateSquare(square, bubbleColor.value)
   }
 }
 </script>

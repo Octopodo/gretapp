@@ -1,11 +1,13 @@
 <template>
   <div class="board-loader">
+    <h1>{{ currentProgress }}</h1>
     <transition name="slide-left">
       <span v-if="!loaded"> <h1>Loading</h1></span>
 
       <game-board
         v-else
         @board-completed="goToNextBoard()"
+        @square-touched="currentProgress++"
         class="game-board-container"
         :key="index"
         :image-data="state"
@@ -16,15 +18,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watchEffect, type Ref } from 'vue'
+import { computed, ref, watchEffect, provide, type Ref } from 'vue'
 import { useLoadImages, useRandomImagesUnique, type ImageData } from '@/composables'
 import { configStore } from '@/stores/configStore'
 import { useCycleList } from '@vueuse/core'
+import { useRandomColor } from '@/composables'
 
 import GameBoard from '@/components/board/game-board.vue'
 
 let cycleList
 let next: Function
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 let prev: Function
 let state: Ref<ImageData>
 let index: Ref<number>
@@ -34,6 +38,7 @@ const imageData = useRandomImagesUnique(config.imageCount)
 const { loaded, images } = useLoadImages(imageData)
 
 const currentProgress = ref(0)
+const bubbleColor = useRandomColor()
 const gameSpeed = computed(() => config.gameSpeed + 'ms')
 
 watchEffect(() => {
@@ -50,6 +55,8 @@ async function goToNextBoard() {
   await new Promise((resolve) => setTimeout(resolve, config.pictureChangeDelay))
   next()
 }
+
+provide('bubbleColor', bubbleColor)
 </script>
 
 <style scoped>

@@ -6,7 +6,7 @@
 </template>
 
 <script setup lang="ts">
-import BoardLoader from '@/components/board-loader/board-loader.vue'
+import BoardLoader from '@/components/board/board-loader.vue'
 import { configStore } from './stores/configStore'
 
 const config = configStore()
