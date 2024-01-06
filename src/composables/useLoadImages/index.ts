@@ -37,27 +37,38 @@ function useRandomImagesUnique(count: number | Ref<number>): ImageData[] {
   return selectedImages
 }
 
+import { onUnmounted } from 'vue'
+
 function useLoadImages(imagesData: ImageData[] | Ref<ImageData[]>) {
   const loaded = ref(false)
   const images = ref<ImageData[]>([])
   const imageValues = toValue(imagesData)
   const loadImages = imageValues.map((imageData) => {
-    return new Promise((resolve) => {
-      const { isLoading, state } = useImage({ src: imageData.url })
-      watch(isLoading, (loading) => {
-        if (!loading) {
+    return new Promise((resolve, reject) => {
+      const { isLoading, state, error } = useImage({ src: imageData.url })
+      const stopWatch = watch(isLoading, (loading) => {
+        if (error.value) {
+          stopWatch()
+          reject(error.value)
+        } else if (!loading) {
           imageData.width = state.value?.width
           imageData.height = state.value?.height
           images.value.push(imageData)
+          stopWatch()
           resolve(null)
         }
       })
+      onUnmounted(stopWatch)
     })
   })
 
-  Promise.all(loadImages).then(() => {
-    loaded.value = true
-  })
+  Promise.all(loadImages)
+    .then(() => {
+      loaded.value = true
+    })
+    .catch((error) => {
+      console.error('Failed to load an image:', error)
+    })
 
   return { loaded, images }
 }
