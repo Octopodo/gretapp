@@ -2,6 +2,7 @@
   <div>
     <div class="board-content" @pointermove.prevent="handlePoinerMove">
       <board-square
+        class=""
         v-for="(square, index) in squareCount"
         :key="index"
         ref="squares"
@@ -62,6 +63,7 @@ const handlePoinerMove = (event: PointerEvent) => {
 </script>
 
 <style scoped>
+
 .board-content {
   /* position: absolute; */
   display: grid;
@@ -69,5 +71,6 @@ const handlePoinerMove = (event: PointerEvent) => {
   grid-template-columns: v-bind('gridTemplateColumns');
   grid-template-rows: v-bind('gridTemplateRows');
   /* z-index: 50; */
+  opacity: 0.8;
 }
 </style>
