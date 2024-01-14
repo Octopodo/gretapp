@@ -2,15 +2,7 @@ import imagesDB from '@/data/images.json'
 import { ref, watch, toValue, type Ref } from 'vue'
 import { useRandomIntInRange } from '..'
 import { useImage } from '@vueuse/core'
-
-interface ImageData {
-  url: string
-  name?: string
-  author?: string
-  alt?: string
-  width?: number
-  height?: number
-}
+import { type ImageData } from '@/types'
 
 function useRandomImages(count: number | Ref<number>) {
   const iCount = toValue(count)

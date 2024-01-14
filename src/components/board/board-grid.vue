@@ -73,3 +73,4 @@ const handlePoinerMove = (event: PointerEvent) => {
   /* z-index: 50; */
 }
 </style>
+@/stores/devConfigStore

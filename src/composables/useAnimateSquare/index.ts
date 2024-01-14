@@ -1,10 +1,10 @@
-import anime from 'animejs/lib/anime.es.js'
-import { configStore } from '@/stores/configStore'
+import anime from 'animejs'
+import { devConfigStore } from '@/stores/devConfigStore'
 let zIndex = 100
 const boxShadow = ' 1px 2px 5px 0px rgba(0,0,0,0.04) '
 
 export function useAnimateSquare(element: HTMLElement, toColor: string) {
-  const config = configStore()
+  const config = devConfigStore()
   const min = config.minScale
   const max = config.maxScale
   const scale = Math.random() * (max - min + 1) + min

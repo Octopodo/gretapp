@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
 import { createPinia } from 'pinia'
 import { describe, expect, it } from 'vitest'
-import { configStore } from '@/stores/configStore'
+import { configStore } from '@/stores/devConfigStore'
 import BoardGrid from '@/components/board/board-grid.vue'
 
 describe('BoardGrid.vue', () => {

@@ -89,3 +89,4 @@ watch(progress, (value) => {
   position: absolute;
 }
 </style>
+@/stores/devConfigStore

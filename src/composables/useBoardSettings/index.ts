@@ -1,5 +1,5 @@
 import { ref, provide, type Ref } from 'vue'
-import { configStore } from '@/stores/configStore'
+import { configStore } from '@/stores/devConfigStore'
 import {
   useSetCanvasSize,
   useRandomColor,
@@ -16,7 +16,11 @@ function useBoardSettingsProvider(options: BoardSettingsOptions) {
 
   const { width, height, cols, rows } = useSetCanvasSize(options)
   const color = useRandomColor()
-  const images = useRandomImagesUnique({ count: options.count })
+  const images = useRandomImagesUnique(options.count)
+
+  const canvas = (image) => {}
+
+  return { color, loadedImages, canvas }
 }
 
 export { useBoardSettingsProvider, type BoardSettingsOptions }

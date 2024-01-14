@@ -14,3 +14,4 @@ config
 </script>
 
 <style scoped></style>
+./stores/devConfigStore

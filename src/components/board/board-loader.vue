@@ -19,7 +19,11 @@
 
 <script setup lang="ts">
 import { computed, ref, watchEffect, provide, type Ref } from 'vue'
-import { useLoadImages, useRandomImagesUnique, type ImageData } from '@/composables'
+import {
+  useLoadImages,
+  useRandomImagesUnique,
+  type ImageData
+} from '@/composables'
 import { configStore } from '@/stores/configStore'
 import { useCycleList } from '@vueuse/core'
 import { useRandomColor } from '@/composables'
@@ -89,3 +93,4 @@ provide('bubbleColor', bubbleColor)
   transform: translateX(100%);
 }
 </style>
+@/stores/devConfigStore

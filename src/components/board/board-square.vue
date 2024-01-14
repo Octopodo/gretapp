@@ -1,15 +1,21 @@
 <template>
-  <div class="board-square-container" :class="{ inactive: touched }">
-    <div ref="square" class="board-square"></div>
+  <div
+    class="board-square-container"
+    :class="{ inactive: touched }"
+  >
+    <div
+      ref="square"
+      class="board-square"
+    ></div>
   </div>
   <!-- <div class="main-board-square">Hola square</div> -->
 </template>
 
 <script setup lang="ts">
 import { computed, ref, inject, type Ref } from 'vue'
-import { configStore } from '@/stores/configStore'
+import { devConfigStore } from '@/stores/devConfigStore'
 
-const config = configStore()
+const config = devConfigStore()
 
 const bubbleColor = inject<Ref<string>>('bubbleColor', ref(''))
 const squareSize = inject<Ref<number>>('squareSize', ref(0))
@@ -31,14 +37,7 @@ const gridOpacity = computed(() => config.gridOpacity + '%')
   cursor: pointer;
 }
 
-.board-square {
-  background-color: v-bind('bubbleColor');
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  /* filter: blur(01px); */
-  opacity: v-bind('gridOpacity');
-}
+
 
 .inactive {
   pointer-events: none;
