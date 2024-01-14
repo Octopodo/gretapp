@@ -3,6 +3,7 @@ import { ref, computed, inject } from 'vue'
 import { useAnimateSquare } from '@/composables'
 import BoardSquare from './BoardSquare.vue'
 
+const emit = defineEmits(['square-touched'])
 const props = defineProps({
   cols: { type: Number, required: true },
   rows: { type: Number, required: true },
@@ -35,6 +36,7 @@ const paint = (event: PointerEvent) => {
 
   const index = row * props.cols + col
   if (squaresTouched.value[index] === false && !block.value) {
+    emit('square-touched')
     squaresTouched.value[index] = true
     const square = viewSquares.value[index].$refs.square as HTMLElement
     useAnimateSquare(square, color.value)

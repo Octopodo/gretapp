@@ -2,9 +2,9 @@
 // import { BoardController } from '../../composables'
 // import BoardInfo from './BoardInfo.vue'
 import BoardGrid from './BoardGrid.vue'
-// import BoardImage from './BoardImage.vue'
+import BoardImage from './BoardImage.vue'
 
-import { ref, watch, type PropType, type Ref } from 'vue'
+import { ref, type PropType, type Ref } from 'vue'
 import { useSetCanvasSize, type ImageData } from '@/composables'
 import { gameConfigStore } from '@/stores/gameConfigStore'
 
@@ -24,20 +24,21 @@ const { rows, cols, width, height } = useSetCanvasSize({
   resolution: gameConfig.squareSize
 })
 const squareCount = ref(rows.value * cols.value)
-
-const squaresTouched = ref(0)
+const squresTouched = ref(0)
 const progress = ref(0)
 const image: Ref<ImageData> = ref(props.imageData)
 
-watch(squaresTouched, (value) => {
-  emit('square-touched')
-  progress.value = (value / squareCount.value) * gameConfig.winGoal
+const touchSquare = () => {
+  squresTouched.value++
+  progress.value =
+    (squresTouched.value / squareCount.value) * gameConfig.winGoal
 
   if (progress.value >= 100) {
     emit('board-completed')
+    emit('square-touched')
     blockBoard.value = true
   }
-})
+}
 </script>
 
 <template>
@@ -48,7 +49,7 @@ watch(squaresTouched, (value) => {
       :author="image.author"
     />
     <BoardImage
-      :imageData="image.url"
+      :src="image.url"
       :width="width"
       :height="height"
       :alt="image.alt"
@@ -57,7 +58,7 @@ watch(squaresTouched, (value) => {
       :cols="cols"
       :rows="rows"
       :squareSize="gameConfig.squareSize"
-      @square-touched="squaresTouched++"
+      @square-touched="touchSquare"
     />
   </div>
 </template>

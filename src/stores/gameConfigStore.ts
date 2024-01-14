@@ -13,7 +13,10 @@ export const gameConfigStore = defineStore('gameConfigStore', {
       winGoal: 10,
       images: [] as ImageData[],
       paintColor: '#000000',
-      baseColor: '#ffffff'
+      baseColor: '#ffffff',
+      squaresTouched: 0,
+      boardCompleted: false,
+      boardChangeDelay: 200
     }
   }
 })
