@@ -1,16 +1,26 @@
+<script setup lang="ts">
+import GameManager from '@/components/game/GameManager.vue'
+</script>
+
 <template>
-  <div @touchmove.prevent>
-    <!-- <board class="main-board" :src="config.artPlaceholderUrl" /> -->
-    <board-loader />
+  <div
+    @touchmove.prevent
+    class="app"
+  >
+    <GameManager />
   </div>
 </template>
 
-<script setup lang="ts">
-import BoardLoader from '@/components/board-loader/board-loader.vue'
-import { configStore } from './stores/configStore'
+<style>
+* {
+  margin: 0;
+}
 
-const config = configStore()
-config
-</script>
-
-<style scoped></style>
+.app {
+  margin: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #848484;
+  overflow: hidden;
+}
+</style>

@@ -21,9 +21,11 @@ const colorList = [
   '#424242' // DARKEN
 ]
 
-export function useRandomColor() {
+function useRandomColor() {
   const max = colorList.length - 1
   const randomIndex = useRandomIntInRange(0, max)
-  const color = colorList[randomIndex]
+  const color = colorList[randomIndex.value]
   return ref(color)
 }
+
+export { useRandomColor, colorList }

@@ -1,82 +1,66 @@
 import imagesDB from '@/data/images.json'
-import { ref, watch } from 'vue'
+import { ref, watch, toValue, type Ref } from 'vue'
 import { useRandomIntInRange } from '..'
 import { useImage } from '@vueuse/core'
+import { type ImageData } from '@/types'
 
-interface ImageData {
-  name: string
-  author: string
-  url: string
-  alt: string
-  width?: number
-  height?: number
-}
-
-function useRandomImages(count: number) {
+function useRandomImages(count: number | Ref<number>) {
+  const iCount = toValue(count)
   const i = imagesDB
   const len = imagesDB.length - 1
 
-  const images: ImageData[] = Array.from(Array(count), (item) => {
+  const images: ImageData[] = Array.from(Array(iCount), () => {
     const random = useRandomIntInRange(0, len)
-    return imagesDB[random]
+    return imagesDB[random.value]
   })
   return images
 }
 
-// function useRandomImagesUnique(count: number) {
-//   const len = imagesDB.length - 1
-//   const availableIndexes = Array.from(Array(len), (item, index) => index)
-//   if (count > len) return imagesDB
-
-//   const images: ImageData[] = Array.from(Array(count), (item) => {
-//     const random = useRandomIntInRange(0, len)
-//     availableIndexes.splice(random, 1)
-//     return imagesDB[random]
-//   })
-//   return images
-// }
-
-function useRandomImagesUnique(count: number): ImageData[] {
-  // Hacer una copia del array original
+function useRandomImagesUnique(count: number | Ref<number>): ImageData[] {
   const copy = [...imagesDB]
-
-  // Crear un array vacío para almacenar las imágenes seleccionadas
+  const iCount = toValue(count)
   const selectedImages: ImageData[] = []
 
-  // Mientras la copia del array tenga elementos y no se haya alcanzado el número deseado de imágenes
-  while (copy.length > 0 && selectedImages.length < count) {
-    // Seleccionar un índice aleatorio
+  while (copy.length > 0 && selectedImages.length < iCount) {
     const randomIndex = Math.floor(Math.random() * copy.length)
 
-    // Extraer la imagen en el índice aleatorio y agregarla al array de imágenes seleccionadas
     selectedImages.push(copy.splice(randomIndex, 1)[0])
   }
-
-  // Devolver el array de imágenes seleccionadas
   return selectedImages
 }
 
-function useLoadImages(imagesData: ImageData[]) {
+import { onUnmounted } from 'vue'
+
+function useLoadImages(imagesData: ImageData[] | Ref<ImageData[]>) {
   const loaded = ref(false)
   const images = ref<ImageData[]>([])
-
-  const loadImages = imagesData.map((imageData) => {
-    return new Promise((resolve) => {
-      const { isLoading, state } = useImage({ src: imageData.url })
-      watch(isLoading, (loading) => {
-        if (!loading) {
+  const imageValues = toValue(imagesData)
+  const loadImages = imageValues.map((imageData) => {
+    return new Promise((resolve, reject) => {
+      const { isLoading, state, error } = useImage({ src: imageData.url })
+      const stopWatch = watch(isLoading, (loading) => {
+        if (error.value) {
+          stopWatch()
+          reject(error.value)
+        } else if (!loading) {
           imageData.width = state.value?.width
           imageData.height = state.value?.height
           images.value.push(imageData)
+          stopWatch()
           resolve(null)
         }
       })
+      onUnmounted(stopWatch)
     })
   })
 
-  Promise.all(loadImages).then(() => {
-    loaded.value = true
-  })
+  Promise.all(loadImages)
+    .then(() => {
+      loaded.value = true
+    })
+    .catch((error) => {
+      console.error('Failed to load an image:', error)
+    })
 
   return { loaded, images }
 }
