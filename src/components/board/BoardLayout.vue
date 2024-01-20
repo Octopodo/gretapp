@@ -1,6 +1,4 @@
 <script setup lang="ts">
-// import { BoardController } from '../../composables'
-// import BoardInfo from './BoardInfo.vue'
 import BoardGrid from './BoardGrid.vue'
 import BoardImage from './BoardImage.vue'
 
@@ -24,30 +22,31 @@ const { rows, cols, width, height } = useSetCanvasSize({
   resolution: gameConfig.squareSize
 })
 const squareCount = ref(rows.value * cols.value)
-const squresTouched = ref(0)
+const squaresTouched = ref(0)
 const progress = ref(0)
 const image: Ref<ImageData> = ref(props.imageData)
 
 const touchSquare = () => {
-  squresTouched.value++
+  squaresTouched.value++
   progress.value =
-    (squresTouched.value / squareCount.value) * gameConfig.winGoal
-
+    (squaresTouched.value / squareCount.value) * gameConfig.winGoal * 100
+  console.log(squaresTouched.value, squareCount.value)
   if (progress.value >= 100) {
     emit('board-completed')
     emit('square-touched')
     blockBoard.value = true
+    init()
   }
+}
+
+const init = () => {
+  squaresTouched.value = 0
+  progress.value = 0
 }
 </script>
 
 <template>
-  <div>
-    <BoardInfo
-      :progerss="progress"
-      :title="image.name"
-      :author="image.author"
-    />
+  <div class="board-layout-containter">
     <BoardImage
       :src="image.url"
       :width="width"
@@ -62,3 +61,12 @@ const touchSquare = () => {
     />
   </div>
 </template>
+
+<style scoped>
+.board-layout-containter {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+</style>

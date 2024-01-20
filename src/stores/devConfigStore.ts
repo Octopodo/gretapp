@@ -14,7 +14,7 @@ export const devConfigStore = defineStore('configStore', {
       playgroundHeight: 700,
       playgroundWidth: 700,
       victoryCondition: 10,
-      gridOpacity: 0,
+      gridOpacity: 100,
       pictureChangeDelay: 200
     }
   }

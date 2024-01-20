@@ -12,8 +12,8 @@ export const gameConfigStore = defineStore('gameConfigStore', {
       squareSize: 20,
       winGoal: 10,
       images: [] as ImageData[],
-      paintColor: '#000000',
-      baseColor: '#ffffff',
+      paintColor: '#12f829',
+      baseColor: '#12f829',
       squaresTouched: 0,
       boardCompleted: false,
       boardChangeDelay: 200

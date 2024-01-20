@@ -24,6 +24,7 @@ const height = computed(() => `${props.height}px`)
 
 <style scoped>
 .art-piece {
+  position: absolute;
   width: v-bind('width');
   height: v-bind('height');
 }

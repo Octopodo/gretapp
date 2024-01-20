@@ -25,6 +25,11 @@ const gridTemplateColumns = computed(() => `repeat(${props.cols}, 1fr)`)
 const gridTemplateRows = computed(() => `repeat(${props.rows}, 1fr)`)
 const squareCount = computed(() => props.cols * props.rows)
 
+const boardStyle = computed(() => ({
+  width: `${boardWidth.value}px`,
+  gridTemplateColumns: gridTemplateColumns.value,
+  gridTemplateRows: gridTemplateRows.value
+}))
 const paint = (event: PointerEvent) => {
   const target = event.currentTarget as Element
   const rect = target.getBoundingClientRect()
@@ -51,15 +56,16 @@ const paint = (event: PointerEvent) => {
   >
     <BoardSquare
       v-for="(square, index) in squareCount"
-      :key="index"
       ref="viewSquares"
+      :key="index"
     />
   </div>
 </template>
 
 <style scoped>
-.grid-content {
+.board-grid {
   display: grid;
+  position: absolute;
   width: v-bind('boardWidth');
   grid-template-columns: v-bind('gridTemplateColumns');
   grid-template-rows: v-bind('gridTemplateRows');
