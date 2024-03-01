@@ -1,94 +1,87 @@
 <script setup lang="ts">
-import { computed, ref, watchEffect, type Ref, type PropType } from 'vue'
-import { type ImageData } from '@/types'
-import BoardLayout from '@/components/board/BoardLayout.vue'
-import { useCycleList } from '@vueuse/core'
-import { gameConfigStore } from '@/stores/gameConfigStore'
-import { useLoadImages } from '@/composables'
+import {
+  computed,
+  watchEffect,
+  type PropType,
+} from "vue";
+import { type ImageData } from "@/types";
+import BoardLayout from "@/components/board/BoardLayout.vue";
+import { gameConfigStore } from "@/stores";
+import { useCycleList } from "@vueuse/core";
+import { sceneConfigStore } from "@/components/scene/sceneConfigStore"
+
+
+const gameConfig = gameConfigStore();
+const sceneConfig = sceneConfigStore();
 
 const props = defineProps({
   images: { type: Object as PropType<ImageData[]>, required: true }
-})
+});
 
-const gameConfig = gameConfigStore()
+const cycleList = useCycleList(props.images);
+const next = cycleList.next;
+const image = cycleList.state;
 
-let cycleList
-let next: Function
-let prev: Function
-let state: Ref<ImageData>
-let index: Ref<number>
+const changeSpeed = computed(() => `${gameConfig.gameSpeed}ms`);
 
-const { loaded, images } = useLoadImages(props.images)
-watchEffect(() => {
-  if (loaded.value) {
-    cycleList = useCycleList(images.value)
-    next = cycleList.next
-    prev = cycleList.prev
-    state = cycleList.state
-    index = cycleList.index
+sceneConfig.$onAction(({name, after}) => {
+  if(name === "activistFinishedGluing") {
+    after(() => next());
   }
 })
-
-async function goToNextBoard() {
-  await new Promise((resolve) =>
-    setTimeout(resolve, gameConfig.boardChangeDelay)
-  )
-
-  next()
-}
 </script>
 
 <template>
-  <div class="board-manager">
-    <transition name="slide-left">
-      <span v-if="!loaded"> <h1>Loading</h1></span>
-
-      <div
-        v-else
-        class="board-layout"
+  <div class="board-manager-container">
+    <div class="board-manager">
+      <transition
+        name="slide-left"
+        @before-enter="sceneConfig.boardBeforeEnter"
+        @after-enter="sceneConfig.boardAfterEnter"
+        @before-leave="sceneConfig.boardBeforeLeave"
+        appear
       >
         <BoardLayout
-          @board-completed="goToNextBoard()"
-          :key="index"
-          :image-data="state"
+          :key="`board${gameConfig.boardCount}`"
+          :image-data="image"
         />
-      </div>
-    </transition>
+      </transition>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.board-layout {
-  position: relative;
-  display: block;
+.board-manager-container {
+  height: 600px;
+  width: 100%;
 }
 .board-manager {
   width: 100%;
   height: 100%;
   position: relative;
-  /* background-color: #fff; */
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  transform: translateX(0);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
 }
 
 .slide-left-enter-active,
 .slide-left-leave-active,
 .slide-right-enter-active,
 .slide-right-leave-active {
-  transition: transform v-bind('gameConfig.gameSpeed') ease-in-out;
+  transition: transform v-bind("changeSpeed");
 }
 
 .slide-left-enter-from {
-  transform: translateX(100%);
+  transform: translateX(300%);
 }
 .slide-left-leave-to {
-  transform: translateX(-100%);
+  transform: translateX(-300%);
 }
 .slide-right-enter-from {
-  transform: translateX(-100%);
+  transform: translateX(-300%);
 }
 .slide-right-leave-to {
-  transform: translateX(100%);
+  transform: translateX(300%);
 }
 </style>

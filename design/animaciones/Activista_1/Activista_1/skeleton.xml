@@ -1,0 +1,20 @@
+<skeletons>
+ <skeleton name="Top">
+  <nodes>
+   <read id="0" name="Drawing"/>
+  </nodes>
+  <links>
+   <link in="Top" out="0"/>
+  </links>
+ </skeleton>
+ <skeleton name="Top_1">
+  <nodes>
+   <read id="0" name="Walk"/>
+   <read id="1" name="Stand"/>
+  </nodes>
+  <links>
+   <link in="Top" out="0"/>
+   <link in="Top" out="1"/>
+  </links>
+ </skeleton>
+</skeletons>

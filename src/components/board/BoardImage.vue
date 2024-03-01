@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { frameConfigStore } from '@/components/frame';
 
 const props = defineProps({
   src: { type: String, required: true },
@@ -10,6 +11,7 @@ const props = defineProps({
 
 const width = computed(() => `${props.width}px`)
 const height = computed(() => `${props.height}px`)
+const frameWidth = computed(() => `${frameConfigStore().frameWidth}px`)
 </script>
 
 <template>
@@ -27,5 +29,7 @@ const height = computed(() => `${props.height}px`)
   position: absolute;
   width: v-bind('width');
   height: v-bind('height');
+  top: v-bind('frameWidth');
+  left: v-bind('frameWidth')
 }
 </style>

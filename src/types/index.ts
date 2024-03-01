@@ -1,1 +1,2 @@
-export * from './ImageData'
+export * from "./ImageData";
+export * from "./ExtraProps";

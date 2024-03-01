@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import GameManager from '@/components/game/GameManager.vue'
+import { SpritePlayground } from './components'
 </script>
 
 <template>
@@ -7,7 +7,7 @@ import GameManager from '@/components/game/GameManager.vue'
     @touchmove.prevent
     class="app"
   >
-    <GameManager />
+    <SpritePlayground />
   </div>
 </template>
 

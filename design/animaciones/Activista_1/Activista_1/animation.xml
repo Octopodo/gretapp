@@ -1,0 +1,9 @@
+<animations>
+ <animation name="Activista_1_Top">
+  <attrlinks>
+   <attrlink attr="opacity" node="Walk" value="1"/>
+   <attrlink attr="opacity" node="Stand" value="1"/>
+  </attrlinks>
+  <timedvalues/>
+ </animation>
+</animations>

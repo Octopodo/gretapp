@@ -6,7 +6,7 @@ import { gameConfigStore, devConfigStore } from '@/stores'
 const gameConfig = gameConfigStore()
 const devConfig = devConfigStore()
 
-const color = computed(() => `${gameConfig.baseColor}`)
+const color = computed(() => `${gameConfig.paintColor}`)
 const size = computed(() => `${gameConfig.squareSize}px`)
 const opacity = computed(() => `${devConfig.gridOpacity}%`)
 const square = ref(null)
