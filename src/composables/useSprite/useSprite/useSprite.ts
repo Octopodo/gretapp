@@ -1,5 +1,13 @@
 import type { ExtraProps } from '@/types'
-import { ref, computed, watch, onMounted, type Ref, type StyleValue } from 'vue'
+import {
+  ref,
+  computed,
+  watch,
+  watchEffect,
+  onMounted,
+  type Ref,
+  type StyleValue
+} from 'vue'
 import { useImage } from '@vueuse/core'
 import { HarmonySprite } from '../HarmonySprite/HarmonySprite'
 export interface SpritePropsInterface {
@@ -82,49 +90,49 @@ export const useSprite = (
     } as StyleValue
   })
 
-  // onMounted(() => {
-  //   sprite.play()
-  // })
-
   watch(
     () => props.pause,
     (pause) => {
       if (pause) {
-        sprite.stop()
+        sprite.pause()
         emit('paused')
       }
-    }
+    },
+    { immediate: true }
   )
 
   watch(
     () => props.play,
-    (playAnimation) => {
-      if (playAnimation) {
+    (play) => {
+      if (play) {
         sprite.play()
         emit('playing')
       }
-    }
+    },
+    { immediate: true }
   )
 
   watch(
     () => props.stop,
-    (stopAnimation) => {
-      if (stopAnimation) {
-        stop()
+    (stop) => {
+      if (stop) {
+        sprite.stop()
         sprite.go(0)
         emit('stopped')
       }
-    }
+    },
+    { immediate: true }
   )
 
   watch(
     () => props.playOnce,
-    (playOnceAnimation) => {
-      if (playOnceAnimation) {
+    (playOnce) => {
+      if (playOnce) {
         sprite.playOnce()
         emit('paused')
       }
-    }
+    },
+    { immediate: true }
   )
   return {
     style,

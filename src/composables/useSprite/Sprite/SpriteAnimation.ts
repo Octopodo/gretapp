@@ -44,22 +44,29 @@ export abstract class SpriteAnimation {
   }
 
   play() {
+    this.pause()
     this._interval = setInterval(() => {
-      console.log('playing', this._currentFrameIndex.value)
       this.next()
     }, this._fpsInSecs)
   }
 
   playOnce() {
+    this.stop()
+    this.go(0)
+
     this._interval = setInterval(() => {
-      this.next()
-      if (this._currentFrameIndex.value === this._numberOfFrames - 1) {
-        this.stop()
+      if (this._currentFrameIndex.value < this._numberOfFrames - 1) {
+        this.next()
       }
     }, this._fpsInSecs)
   }
 
+  pause() {
+    clearInterval(this._interval)
+  }
+
   stop() {
     clearInterval(this._interval)
+    this.go(0)
   }
 }

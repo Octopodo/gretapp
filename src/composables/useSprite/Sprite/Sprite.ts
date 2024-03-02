@@ -40,6 +40,9 @@ export abstract class Sprite {
   playOnce() {
     this._currentAnimation.value.playOnce()
   }
+  pause() {
+    this._currentAnimation.value.pause()
+  }
   stop() {
     this._currentAnimation.value.stop()
   }

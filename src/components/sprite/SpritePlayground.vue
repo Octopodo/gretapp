@@ -4,49 +4,28 @@ import { usePathStore } from '@/stores/'
 
 import { Sprite } from '@/components/'
 
-interface SpritePropsInterface {
-  src: string
-  play: boolean
-  playOnce: boolean
-  pause: boolean
-  stop: boolean
-}
-
-const pathStore = usePathStore()
 const spriteSelector = ref<HTMLElement | null>(null) as any
 const currentSprite = ref(spriteSelector.value?.currentSprite)
 const sprites = computed(() => spriteSelector.value?.sprites)
 
 const assetPath = computed(() => '/sprites/characters/activist')
-const play = ref(true)
-const playOnce = ref(false)
-const pause = ref(false)
-const stop = ref(false)
 
-const playAnimation = () => {
-  play.value = true
-  playOnce.value = false
-  pause.value = false
-  stop.value = false
-}
+const reproductionState = ref({
+  play: true,
+  playOnce: false,
+  pause: false,
+  stop: false
+})
 
-const playOnceAnimation = () => {
-  play.value = false
-  playOnce.value = true
-  pause.value = false
-  stop.value = false
-}
-const pauseAnimation = () => {
-  play.value = false
-  playOnce.value = false
-  pause.value = true
-  stop.value = false
-}
-const stopAnimation = () => {
-  play.value = false
-  playOnce.value = false
-  pause.value = false
-  stop.value = true
+function setReproductionState(wich: string) {
+  Object.keys(reproductionState.value).forEach((key) => {
+    const k = key as keyof typeof reproductionState.value
+    if (key === wich) {
+      reproductionState.value[k] = true
+    } else {
+      reproductionState.value[k] = false
+    }
+  })
 }
 
 function selectSprite(name: string) {
@@ -58,25 +37,25 @@ function selectSprite(name: string) {
     <div class="controls">
       <button
         class="control"
-        @click="playAnimation"
+        @click="setReproductionState('play')"
       >
         Play
       </button>
       <button
         class="control"
-        @click="playOnceAnimation"
+        @click="setReproductionState('playOnce')"
       >
         Play Once
       </button>
       <button
         class="control"
-        @click="pauseAnimation"
+        @click="setReproductionState('pause')"
       >
         Pause
       </button>
       <button
         class="control"
-        @click="stopAnimation"
+        @click="setReproductionState('stop')"
       >
         Stop
       </button>
@@ -98,10 +77,7 @@ function selectSprite(name: string) {
       ref="spriteSelector"
       class="sprite"
       :src="assetPath"
-      :play="play"
-      :playOnce="playOnce"
-      :pause="pause"
-      :stop="stop"
+      v-bind="reproductionState"
     />
   </div>
 </template>
