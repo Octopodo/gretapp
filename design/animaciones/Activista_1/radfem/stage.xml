@@ -1,0 +1,7 @@
+<stages>
+ <stage name="Activista_1_Activista_1">
+  <node groupId="0" skinId="0" name="Walk" drwId="1"/>
+  <node groupId="0" skinId="0" name="Stand" drwId="2"/>
+  <play drawingAnimation="Activista_1_Top" name="Top" skeleton="Top" animation="Activista_1_Top"/>
+ </stage>
+</stages>

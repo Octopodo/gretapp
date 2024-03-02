@@ -1,0 +1,14 @@
+<!DOCTYPE spritesheets>
+<spritesheets>
+ <spritesheet resolution="Custom" width="4096" height="4096" name="sheet_Top" filename="spriteSheets/sheet_Top-Custom.png">
+  <sprite scaleY="0.0355556" angleDegrees="0" rect="3828,3627,268,469" offsetX="-42.802" offsetY="-22.5886" name="9-Standing-1.png" scaleX="0.0355556"/>
+  <sprite scaleY="0.0355556" angleDegrees="0" rect="3504,3627,324,428" offsetX="-0.451406" offsetY="-24.6009" name="8-Walk-5.png" scaleX="0.0355556"/>
+  <sprite scaleY="0.0355556" angleDegrees="0" rect="3183,3627,321,428" offsetX="-6.64313" offsetY="-23.7094" name="8-Walk-1.png" scaleX="0.0355556"/>
+  <sprite scaleY="0.0355556" angleDegrees="0" rect="2897,3627,286,428" offsetX="3.71531" offsetY="-22.5816" name="8-Walk-4.png" scaleX="0.0355556"/>
+  <sprite scaleY="0.0355556" angleDegrees="0" rect="2602,3627,295,423" offsetX="1.43859" offsetY="-23.4562" name="8-Walk-8.png" scaleX="0.0355556"/>
+  <sprite scaleY="0.0355556" angleDegrees="0" rect="2265,3627,337,422" offsetX="-0.833906" offsetY="-28.7902" name="8-Walk-2.png" scaleX="0.0355556"/>
+  <sprite scaleY="0.0355556" angleDegrees="0" rect="1938,3627,327,420" offsetX="0.102656" offsetY="-33.0877" name="8-Walk-3.png" scaleX="0.0355556"/>
+  <sprite scaleY="0.0355556" angleDegrees="0" rect="1623,3627,315,418" offsetX="1.68891" offsetY="-29.3625" name="8-Walk-6.png" scaleX="0.0355556"/>
+  <sprite scaleY="0.0355556" angleDegrees="0" rect="1348,3627,275,416" offsetX="0.548437" offsetY="-27.09" name="8-Walk-7.png" scaleX="0.0355556"/>
+ </spritesheet>
+</spritesheets>

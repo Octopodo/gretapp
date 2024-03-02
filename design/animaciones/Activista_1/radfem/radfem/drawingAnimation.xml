@@ -1,0 +1,10 @@
+<drawingAnimations>
+ <drawingAnimation spritesheet="sheet_Top" name="Activista_1_Top">
+  <drawing node="Walk" name="8-Walk" drwId="1">
+   <drw skinId="0" frame="1" repeat="1" name="8-Walk-1.png"/>
+  </drawing>
+  <drawing node="Stand" name="3-Stand" drwId="2">
+   <drw skinId="0" frame="1" repeat="22" name="3-Stand-1.png"/>
+  </drawing>
+ </drawingAnimation>
+</drawingAnimations>

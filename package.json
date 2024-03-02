@@ -13,7 +13,8 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "format": "prettier --write src/",
     "create": "node ./scripts/create.mjs",
-    "generate-assets": "node ./scripts/generate-assets-list.js"
+    "generate-assets": "node ./scripts/generate-assets-list.js",
+    "generate-sprites": "node ./scripts/generate-sprites.js"
   },
   "dependencies": {
     "@types/animejs": "^3.1.12",

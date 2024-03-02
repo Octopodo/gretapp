@@ -1,12 +1,5 @@
 {
-  "sprites": {
-    "characters": {
-      "activist": [
-        "/assets/sprites/characters/activist/2-speech.png",
-        "/assets/sprites/characters/activist/4-glue.png",
-        "/assets/sprites/characters/activist/6-running.png",
-        "/assets/sprites/characters/activist/standing.png"
-      ]
-    }
-  }
+  "sprites": [
+    "/assets/sprites/radfem.png"
+  ]
 }

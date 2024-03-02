@@ -24,4 +24,4 @@ function generateSpritesObject() {
 }
 
 const sprites = generateSpritesObject()
-fs.writeFileSync('src/data/sprites.json', JSON.stringify(sprites, null, 2))
+fs.writeFileSync('src/data/spritePaths.json', JSON.stringify(sprites, null, 2))

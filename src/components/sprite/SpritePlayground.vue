@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { usePathStore } from '@/stores/'
+
 import { Sprite } from '@/components/'
-import { SpriteSelector } from '@/components/'
 
 interface SpritePropsInterface {
   src: string
@@ -18,7 +18,7 @@ const currentSprite = ref(spriteSelector.value?.currentSprite)
 const sprites = computed(() => spriteSelector.value?.sprites)
 
 const assetPath = computed(() => '/sprites/characters/activist')
-const play = ref(false)
+const play = ref(true)
 const playOnce = ref(false)
 const pause = ref(false)
 const stop = ref(false)
@@ -94,8 +94,9 @@ function selectSprite(name: string) {
         </option>
       </select>
     </div>
-    <SpriteSelector
+    <Sprite
       ref="spriteSelector"
+      class="sprite"
       :src="assetPath"
       :play="play"
       :playOnce="playOnce"
@@ -110,5 +111,11 @@ function selectSprite(name: string) {
   width: 100px;
   height: 50px;
   font-size: 1.2rem;
+}
+
+.sprite {
+  position: relative;
+  top: 100px;
+  left: 100px;
 }
 </style>

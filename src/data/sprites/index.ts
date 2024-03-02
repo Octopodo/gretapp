@@ -1,5 +1,1 @@
-import * as radfem from './radfem'
-
-export const Chacacters = {
-  radfem
-}
+export * as Characters from './Characters'
