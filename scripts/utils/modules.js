@@ -20,6 +20,9 @@ export function createIndexFile(dirPath, replace = false) {
 
 export function appendToIndexFile(indexFilePath, exportText) {
   if (fs.existsSync(indexFilePath)) {
-    fs.appendFileSync(indexFilePath, exportText)
+    const currentContent = fs.readFileSync(indexFilePath, 'utf8')
+    if (!currentContent.includes(exportText)) {
+      fs.appendFileSync(indexFilePath, exportText)
+    }
   }
 }
