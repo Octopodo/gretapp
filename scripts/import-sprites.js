@@ -197,7 +197,10 @@ function importSpritesFromDialog() {
     importSprites(dir)
   })
 }
-program.version('1.0.0').description('Sprite management tool')
+
+////////////////////////////////////////
+//COMMAND LINE INTERFACE
+program.version('1.0.0').description('Sprite management tool for Gretapp')
 
 program
   .command('import')
