@@ -1,5 +1,5 @@
-import { SpriteAnimation } from '../Sprite/SpriteAnimation'
-import { HarmonyFrame } from './HarmonyFrame'
+import { SpriteAnimation } from '@/engine/Sprite'
+import { HarmonyFrame } from './HarmonySpriteFrame'
 const ANIMATION_NAME = 1
 
 export class HarmonyAnimation extends SpriteAnimation {

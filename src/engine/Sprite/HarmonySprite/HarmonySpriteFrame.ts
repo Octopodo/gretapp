@@ -1,4 +1,4 @@
-import { SpriteFrame } from '../Sprite/SpriteFrame'
+import { SpriteFrame } from '@/engine/Sprite'
 
 export const HARMONY_FRAME_NAME = 1
 export const HARMONT_DRAWING_NUMBER = 2

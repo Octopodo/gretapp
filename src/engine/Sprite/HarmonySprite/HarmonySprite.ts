@@ -1,8 +1,8 @@
 import * as Sprites from '@/data/sprites/'
 import { ref } from 'vue'
-import { Sprite } from '../Sprite'
-import { HarmonyFrame } from './HarmonyFrame'
-import { HarmonyAnimation } from './HarmonyAnimation'
+import { Sprite } from '..'
+import { HarmonyFrame } from './HarmonySpriteFrame'
+import { HarmonyAnimation } from './HarmonySpriteAnimation'
 interface SpriteFrame {
   x: number
   y: number

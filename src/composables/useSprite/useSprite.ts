@@ -9,7 +9,7 @@ import {
   type StyleValue
 } from 'vue'
 import { useImage } from '@vueuse/core'
-import { HarmonySprite } from '../HarmonySprite/HarmonySprite'
+import { HarmonySprite } from '@/engine/Sprite'
 export interface SpritePropsInterface {
   scale: number
   play?: boolean
