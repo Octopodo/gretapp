@@ -33,10 +33,6 @@ export const SpriteProps = {
     type: Boolean,
     default: false
   },
-  type: {
-    type: String,
-    default: 'Characters'
-  },
   name: {
     type: String,
     default: 'radfem'
@@ -53,10 +49,9 @@ export const useSprite = (
 ) => {
   const type = computed(() => props.type)
   const name = computed(() => props.name)
-  const src = computed(
-    () => `/assets/sprites/${type.value.toLowerCase()}/${name.value}.png`
-  )
-  const sprite = ref(new HarmonySprite(type.value, name.value))
+  //Implement multi file support
+  const src = computed(() => `/assets/sprites/${name.value}-1.png`)
+  const sprite = ref(new HarmonySprite(name.value))
   const currentAnimation = computed(() => sprite.value.currentAnimation)
   const currentFrame = computed(() => currentAnimation.value.currentFrame)
 

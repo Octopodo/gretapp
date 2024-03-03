@@ -17,6 +17,7 @@ export function usePlayer() {
         state.value[k] = false
       }
     })
+    const stop = 0
   }
 
   return {

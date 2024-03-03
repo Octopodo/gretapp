@@ -1,14 +1,10 @@
-import { ref, type Ref } from 'vue'
-import { useCycleList } from '@vueuse/core'
-import type { set } from 'animejs'
-
 export abstract class Sprite {
   protected _animationNames: string[]
   protected _animations: any[]
   protected _frames: any[]
   protected _currentAnimation: any
 
-  constructor(type: string, name: string) {
+  constructor() {
     this._animations = []
     this._frames = []
     this._animationNames = []
@@ -19,7 +15,7 @@ export abstract class Sprite {
     return this._animations.map((a: any) => a.name)
   }
 
-  get currentAnimation(): Ref<any> {
+  get currentAnimation(): any {
     return this._currentAnimation
   }
 

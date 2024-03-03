@@ -21,11 +21,10 @@ interface SpriteAnimation {
 }
 
 export class HarmonySprite extends Sprite {
-  constructor(type: string, name: string) {
-    super(type, name)
-    const spriteType = type as keyof typeof Sprites
-    const spriteName = name as keyof (typeof Sprites)[typeof spriteType]
-    const sprite = Sprites[spriteType][spriteName]
+  constructor(name: string) {
+    super()
+    const spriteName = name as keyof typeof Sprites
+    const sprite = Sprites[spriteName]
     this._frames = this.generateFrames(
       //At the moment we only have one spritesheet.
       //In the future, maybe we will have to iterate over all the spritesheets.
@@ -36,7 +35,6 @@ export class HarmonySprite extends Sprite {
     )
 
     this._currentAnimation = this._animations[0]
-    const stop = 0
   }
 
   private generateFrames(frames: any[]) {
