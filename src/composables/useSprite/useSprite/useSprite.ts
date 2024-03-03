@@ -77,9 +77,9 @@ export const useSprite = (
     } as StyleValue
   })
   const style = computed(() => {
-    const x = currentFrame.value.x - currentFrame.value.offsetX
+    const x = currentFrame.value.x
 
-    const y = currentFrame.value.y + currentFrame.value.offsetY / 4
+    const y = currentFrame.value.y
 
     return {
       position: 'relative',
