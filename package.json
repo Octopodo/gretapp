@@ -13,13 +13,15 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "format": "prettier --write src/",
     "create": "node ./scripts/create.mjs",
-    "generate-assets": "node ./scripts/generate-assets-list.js",
-    "generate-sprites": "node ./scripts/generate-sprites.js"
+    "import-sprites": "node ./scripts/import-sprites.js import",
+    "delete-sprites": "node ./scripts/import-sprites.js delete",
+    "remove-sprites": "node ./scripts/import-sprites.js delete"
   },
   "dependencies": {
     "@types/animejs": "^3.1.12",
     "@vueuse/core": "^10.7.1",
     "@vueuse/sound": "^2.0.1",
+    "commander": "^12.0.0",
     "pinia": "^2.1.7",
     "vue": "^3.4.3"
   },

@@ -1,13 +1,5 @@
 import type { ExtraProps } from '@/types'
-import {
-  ref,
-  computed,
-  watch,
-  watchEffect,
-  onMounted,
-  type Ref,
-  type StyleValue
-} from 'vue'
+import { ref, computed, watch, type StyleValue } from 'vue'
 import { useImage } from '@vueuse/core'
 import { HarmonySprite } from '@/engine/Sprite'
 export interface SpritePropsInterface {
