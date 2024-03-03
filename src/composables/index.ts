@@ -6,3 +6,4 @@ export * from "./useSetCanvasSize";
 export * from "./useLoadImages";
 export * from "./usePaintCursor";
 export * from "./useSprite";
+export * from './usePlayer';

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { usePathStore } from '@/stores/'
+import { usePlayer } from '@/composables'
 
 import { Sprite } from '@/components/'
 
@@ -8,23 +8,7 @@ const spriteRef = ref<HTMLElement | null>(null) as any
 const sprite = computed(() => spriteRef.value?.sprite)
 const animations = computed(() => sprite.value?.animations)
 
-const reproductionState = ref({
-  play: true,
-  playOnce: false,
-  pause: false,
-  stop: false
-})
-
-function setReproductionState(wich: string) {
-  Object.keys(reproductionState.value).forEach((key) => {
-    const k = key as keyof typeof reproductionState.value
-    if (key === wich) {
-      reproductionState.value[k] = true
-    } else {
-      reproductionState.value[k] = false
-    }
-  })
-}
+const { state, play, playOnce, pause, stop } = usePlayer()
 
 function selectSprite(payload: Event) {
   if (!sprite.value) return
@@ -32,7 +16,7 @@ function selectSprite(payload: Event) {
   const oldName = sprite.value.currentAnimation.name
   sprite.value.currentAnimation = target?.value
   if (sprite.value.currentAnimation.name !== oldName) {
-    setReproductionState('')
+    stop()
   }
 }
 
@@ -45,25 +29,25 @@ onMounted(() => {
     <div class="controls">
       <button
         class="control"
-        @click="setReproductionState('play')"
+        @click="play"
       >
         Play
       </button>
       <button
         class="control"
-        @click="setReproductionState('playOnce')"
+        @click="playOnce"
       >
         Play Once
       </button>
       <button
         class="control"
-        @click="setReproductionState('pause')"
+        @click="pause"
       >
         Pause
       </button>
       <button
         class="control"
-        @click="setReproductionState('stop')"
+        @click="stop"
       >
         Stop
       </button>
@@ -84,7 +68,7 @@ onMounted(() => {
     <Sprite
       ref="spriteRef"
       class="sprite"
-      v-bind="reproductionState"
+      v-bind="state"
     />
   </div>
 </template>
