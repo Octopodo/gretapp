@@ -1,6 +1,5 @@
 import * as Sprites from '@/data/sprites/'
-import Test from '@/data/sprites/Characters/radfem/drawingAnimation.xml'
-import type { get } from 'http'
+import { ref } from 'vue'
 import { Sprite } from '../Sprite'
 import { HarmonyFrame } from './HarmonyFrame'
 import { HarmonyAnimation } from './HarmonyAnimation'
@@ -35,7 +34,8 @@ export class HarmonySprite extends Sprite {
     this._animations = this.generateAnimations(
       sprite.animations.drawingAnimations.drawingAnimation[0].drawing
     )
-    super.generateCycleList()
+
+    this._currentAnimation = this._animations[0]
     const stop = 0
   }
 

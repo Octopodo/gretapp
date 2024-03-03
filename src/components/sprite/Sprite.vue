@@ -7,9 +7,8 @@ import {
 
 const props = defineProps(SpriteProps)
 const emit = defineEmits(['update:modelValue'])
-const { style, scaleStyle, isLoading } = useSprite(props, emit)
-
-defineExpose({})
+const { style, scaleStyle, isLoading, sprite } = useSprite(props, emit)
+defineExpose({ sprite })
 </script>
 
 <template>

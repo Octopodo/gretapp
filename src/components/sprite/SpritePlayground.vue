@@ -4,11 +4,9 @@ import { usePathStore } from '@/stores/'
 
 import { Sprite } from '@/components/'
 
-const spriteSelector = ref<HTMLElement | null>(null) as any
-const currentSprite = ref(spriteSelector.value?.currentSprite)
-const sprites = computed(() => spriteSelector.value?.sprites)
-
-const assetPath = computed(() => '/sprites/characters/activist')
+const spriteRef = ref<HTMLElement | null>(null) as any
+const sprite = computed(() => spriteRef.value?.sprite)
+const animations = computed(() => sprite.value?.animations)
 
 const reproductionState = ref({
   play: true,
@@ -28,9 +26,19 @@ function setReproductionState(wich: string) {
   })
 }
 
-function selectSprite(name: string) {
-  spriteSelector.value?.selectSprite(name)
+function selectSprite(payload: Event) {
+  if (!sprite.value) return
+  const target = payload.target as HTMLInputElement
+  const oldName = sprite.value.currentAnimation.name
+  sprite.value.currentAnimation = target?.value
+  if (sprite.value.currentAnimation.name !== oldName) {
+    setReproductionState('')
+  }
 }
+
+onMounted(() => {
+  const stop = 0
+})
 </script>
 <template>
   <div>
@@ -61,22 +69,21 @@ function selectSprite(name: string) {
       </button>
       <select
         class="control"
-        v-model="currentSprite"
-        @change="selectSprite(currentSprite.name)"
+        @change="selectSprite"
       >
         <option
-          v-for="sprite in sprites"
-          :key="sprite.name"
-          :value="sprite"
+          v-for="(animation, index) in animations"
+          :key="index"
+          :value="animation"
+          :selected="animation === sprite.currentAnimation.name"
         >
-          {{ sprite.name }}
+          {{ animation }}
         </option>
       </select>
     </div>
     <Sprite
-      ref="spriteSelector"
+      ref="spriteRef"
       class="sprite"
-      :src="assetPath"
       v-bind="reproductionState"
     />
   </div>

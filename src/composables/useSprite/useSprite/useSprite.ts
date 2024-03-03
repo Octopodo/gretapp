@@ -64,10 +64,13 @@ export const useSprite = (
   const src = computed(
     () => `/assets/sprites/${type.value.toLowerCase()}/${name.value}.png`
   )
-  const sprite = new HarmonySprite(type.value, name.value)
+  const sprite = ref(new HarmonySprite(type.value, name.value))
+  const currentAnimation = computed(() => sprite.value.currentAnimation)
+  const currentFrame = computed(() => currentAnimation.value.currentFrame)
+
+  sprite.value.currentAnimation = 'Standing'
+
   const { state: isLoading } = useImage({ src: src.value })
-  const currentFrame = sprite.currentAnimation.value.currentFrame
-  sprite.currentAnimation = 'Walk'
   const scaleStyle = computed(() => {
     return {
       transform: `scale(${props.scale})`
@@ -94,7 +97,7 @@ export const useSprite = (
     () => props.pause,
     (pause) => {
       if (pause) {
-        sprite.pause()
+        sprite.value.pause()
         emit('paused')
       }
     },
@@ -105,7 +108,7 @@ export const useSprite = (
     () => props.play,
     (play) => {
       if (play) {
-        sprite.play()
+        sprite.value.play()
         emit('playing')
       }
     },
@@ -116,8 +119,8 @@ export const useSprite = (
     () => props.stop,
     (stop) => {
       if (stop) {
-        sprite.stop()
-        sprite.go(0)
+        sprite.value.stop()
+        sprite.value.go(0)
         emit('stopped')
       }
     },
@@ -128,7 +131,7 @@ export const useSprite = (
     () => props.playOnce,
     (playOnce) => {
       if (playOnce) {
-        sprite.playOnce()
+        sprite.value.playOnce()
         emit('paused')
       }
     },
@@ -137,7 +140,7 @@ export const useSprite = (
   return {
     style,
     scaleStyle,
-    currentAnimation: sprite.currentAnimation,
+    sprite,
     isLoading
   }
 }

@@ -55,8 +55,10 @@ export abstract class SpriteAnimation {
     this.go(0)
 
     this._interval = setInterval(() => {
-      if (this._currentFrameIndex.value < this._numberOfFrames - 1) {
+      if (this._currentFrameIndex < this._numberOfFrames - 1) {
         this.next()
+      } else {
+        this.stop()
       }
     }, this._fpsInSecs)
   }

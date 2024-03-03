@@ -6,18 +6,13 @@ export abstract class Sprite {
   protected _animationNames: string[]
   protected _animations: any[]
   protected _frames: any[]
-  protected _currentAnimation: Ref<any>
+  protected _currentAnimation: any
 
   constructor(type: string, name: string) {
     this._animations = []
     this._frames = []
     this._animationNames = []
-    this._currentAnimation = ref(null)
-  }
-
-  protected generateCycleList() {
-    const cycleAnimations = useCycleList(this._animations)
-    this._currentAnimation = cycleAnimations.state
+    this._currentAnimation = {}
   }
 
   get animations() {
@@ -29,30 +24,35 @@ export abstract class Sprite {
   }
 
   set currentAnimation(name: string) {
-    this._currentAnimation.value = this._animations.find(
-      (a: any) => a.name === name
-    )
+    const animationIndex = this._animations.findIndex((a: any) => {
+      console.log('CHECKING NAMES', a.name, name)
+      return a.name === name
+    })
+    if (animationIndex !== -1) {
+      this._currentAnimation = this._animations[animationIndex]
+      const stop = 0
+    }
   }
 
   play() {
-    this._currentAnimation.value.play()
+    this._currentAnimation.play()
   }
   playOnce() {
-    this._currentAnimation.value.playOnce()
+    this._currentAnimation.playOnce()
   }
   pause() {
-    this._currentAnimation.value.pause()
+    this._currentAnimation.pause()
   }
   stop() {
-    this._currentAnimation.value.stop()
+    this._currentAnimation.stop()
   }
   next() {
-    this._currentAnimation.value.next()
+    this._currentAnimation.next()
   }
   prev() {
-    this._currentAnimation.value.prev()
+    this._currentAnimation.prev()
   }
   go(i: number) {
-    this._currentAnimation.value.go(i)
+    this._currentAnimation.go(i)
   }
 }
