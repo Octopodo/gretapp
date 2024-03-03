@@ -2,13 +2,13 @@ import type { ExtraProps } from '@/types'
 import { ref, computed, watch, type StyleValue } from 'vue'
 import { useImage } from '@vueuse/core'
 import { HarmonySprite } from '@/engine/Sprite'
+import { usePlayer } from '@/composables/'
 export interface SpritePropsInterface {
   scale: number
   play?: boolean
   playOnce?: boolean
   pause?: boolean
   stop?: boolean
-  type: string
   name: string
 }
 
@@ -49,6 +49,7 @@ export const useSprite = (
 ) => {
   const type = computed(() => props.type)
   const name = computed(() => props.name)
+  const { play, playOnce, pause, stop, state } = usePlayer()
   //Implement multi file support
   const src = computed(() => `/assets/sprites/${name.value}-1.png`)
   const sprite = ref(new HarmonySprite(name.value))
@@ -108,7 +109,7 @@ export const useSprite = (
       if (stop) {
         sprite.value.stop()
         sprite.value.go(0)
-        emit('stopped')
+        emit('stop')
       }
     },
     { immediate: true }
@@ -118,8 +119,10 @@ export const useSprite = (
     () => props.playOnce,
     (playOnce) => {
       if (playOnce) {
-        sprite.value.playOnce()
-        emit('paused')
+        sprite.value.playOnce().then(() => {
+          emit('playedOnce')
+          sprite.value.stop()
+        })
       }
     },
     { immediate: true }

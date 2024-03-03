@@ -34,7 +34,7 @@ export abstract class Sprite {
     this._currentAnimation.play()
   }
   playOnce() {
-    this._currentAnimation.playOnce()
+    return this._currentAnimation.playOnce()
   }
   pause() {
     this._currentAnimation.pause()

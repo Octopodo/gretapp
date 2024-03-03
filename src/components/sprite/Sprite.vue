@@ -6,7 +6,7 @@ import {
 } from '@/composables'
 
 const props = defineProps(SpriteProps)
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['play', 'pause', 'stop', 'playedOnce'])
 const { style, scaleStyle, isLoading, sprite } = useSprite(props, emit)
 defineExpose({ sprite })
 </script>

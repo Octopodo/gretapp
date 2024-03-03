@@ -50,17 +50,20 @@ export abstract class SpriteAnimation {
     }, this._fpsInSecs)
   }
 
-  playOnce() {
-    this.stop()
-    this.go(0)
+  playOnce(): Promise<void> {
+    return new Promise((resolve) => {
+      this.stop()
+      this.go(0)
 
-    this._interval = setInterval(() => {
-      if (this._currentFrameIndex < this._numberOfFrames - 1) {
-        this.next()
-      } else {
-        this.stop()
-      }
-    }, this._fpsInSecs)
+      this._interval = setInterval(() => {
+        if (this._currentFrameIndex < this._numberOfFrames - 1) {
+          this.next()
+        } else {
+          this.stop()
+          resolve()
+        }
+      }, this._fpsInSecs)
+    })
   }
 
   pause() {
