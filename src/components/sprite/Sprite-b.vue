@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { computed, ref } from 'vue'
+import { useImage } from '@vueuse/core'
 import {
   useSprite,
   SpriteProps,
@@ -7,9 +9,12 @@ import {
 
 const props = defineProps(SpriteProps)
 const emit = defineEmits(['play', 'pause', 'stop', 'playedOnce'])
+const name = computed(() => props.name)
+const src = computed(() => `/assets/sprites/${name.value}-1.png`)
+
 const {
-  style,
-  scaleStyle,
+  imgStyle,
+  containerStyle,
   isLoading,
   sprite,
   play,
@@ -24,12 +29,13 @@ defineExpose({ sprite, play, pause, stop, playOnce, setCurrentAnimation })
 <template>
   <div
     class="sprite-container"
-    :style="scaleStyle"
+    :style="containerStyle"
   >
-    <div
+    <img
       class="sprite"
-      :style="style"
-    ></div>
+      :src="src"
+      :style="imgStyle"
+    />
   </div>
 </template>
 

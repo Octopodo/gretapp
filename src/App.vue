@@ -21,6 +21,6 @@ import { SpritePlayground } from './components'
   width: 100vw;
   height: 100vh;
   background-color: #848484;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 </style>

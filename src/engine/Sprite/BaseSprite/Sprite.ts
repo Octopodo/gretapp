@@ -3,12 +3,14 @@ export abstract class Sprite {
   protected _animations: any[]
   protected _frames: any[]
   protected _currentAnimation: any
+  protected _maxHeight: number
 
   constructor() {
     this._animations = []
     this._frames = []
     this._animationNames = []
     this._currentAnimation = {}
+    this._maxHeight = 0
   }
 
   get animations() {
@@ -17,6 +19,13 @@ export abstract class Sprite {
 
   get currentAnimation(): any {
     return this._currentAnimation
+  }
+
+  get maxHeight() {
+    const max = this._animations.reduce((acc: number, a: any) => {
+      return a.maxHeight > acc ? a.maxHeight : acc
+    }, 0)
+    return max
   }
 
   set currentAnimation(name: string) {

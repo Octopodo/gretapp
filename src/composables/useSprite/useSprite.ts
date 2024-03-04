@@ -2,36 +2,17 @@ import type { ExtraProps } from '@/types'
 import { ref, computed, watch, type StyleValue } from 'vue'
 import { useImage } from '@vueuse/core'
 import { HarmonySprite } from '@/engine/Sprite'
-import { usePlayer } from '@/composables/'
+
 export interface SpritePropsInterface {
   scale: number
-  play?: boolean
-  playOnce?: boolean
-  pause?: boolean
-  stop?: boolean
   name: string
+  direction: number
 }
 
 export const SpriteProps = {
   scale: {
     type: Number,
     default: 1
-  },
-  play: {
-    type: Boolean,
-    default: false
-  },
-  playOnce: {
-    type: Boolean,
-    default: false
-  },
-  pause: {
-    type: Boolean,
-    default: false
-  },
-  stop: {
-    type: Boolean,
-    default: false
   },
   name: {
     type: String,
@@ -47,90 +28,92 @@ export const useSprite = (
   props: SpritePropsInterface & ExtraProps,
   emit: any
 ) => {
-  const type = computed(() => props.type)
   const name = computed(() => props.name)
-  const { play, playOnce, pause, stop, state } = usePlayer()
+
   //Implement multi file support
   const src = computed(() => `/assets/sprites/${name.value}-1.png`)
+  const { state: image } = useImage({ src: src.value })
+  const width = computed(() => image.value?.width)
+  const height = computed(() => image.value?.height)
   const sprite = ref(new HarmonySprite(name.value))
+  const maxHeigth = ref(sprite.value.maxHeight)
   const currentAnimation = computed(() => sprite.value.currentAnimation)
   const currentFrame = computed(() => currentAnimation.value.currentFrame)
+
+  const top = computed(() => (maxHeigth.value - currentFrame.value.height) / 2)
+
+  const frameCenterX = currentFrame.value.width / 2
+  const frameCenterY = currentFrame.value.height
 
   sprite.value.currentAnimation = 'Standing'
 
   const { state: isLoading } = useImage({ src: src.value })
   const scaleStyle = computed(() => {
     return {
-      transform: `scale(${props.scale})`
+      transform: `scale(${props.scale})`,
+      transformOrigin: 'bottom center'
     } as StyleValue
   })
-  const style = computed(() => {
-    const x = currentFrame.value.x
 
-    const y = currentFrame.value.y
-
+  const containerStyle = computed(() => {
     return {
       position: 'relative',
       width: `${currentFrame.value.width}px`,
       height: `${currentFrame.value.height}px`,
-      objectFit: 'cover',
-      backgroundImage: `url(${src.value})`,
-      backgroundPosition: `${-x}px ${-y}px`,
-      backgroundRepeat: 'no-repeat',
-      transform: `scaleX(${props.direction})`
+      top: `${top.value}px`,
+      transformOrigin: 'bottom center',
+      overflow: 'hidden'
     } as StyleValue
   })
 
-  watch(
-    () => props.pause,
-    (pause) => {
-      if (pause) {
-        sprite.value.pause()
-        emit('paused')
-      }
-    },
-    { immediate: true }
-  )
+  const imgStyle = computed(() => {
+    return {
+      position: 'absolute',
+      top: `${-currentFrame.value.y}px`,
+      left: `${-currentFrame.value.x}px`,
+      transform: `
+        scaleX(${props.direction}) 
+        scale(${props.scale})
+        `,
+      transformOrigin: `${frameCenterX}px ${frameCenterY}px`,
 
-  watch(
-    () => props.play,
-    (play) => {
-      if (play) {
-        sprite.value.play()
-        emit('playing')
-      }
-    },
-    { immediate: true }
-  )
+      pointerEvents: 'none'
+    } as StyleValue
+  })
 
-  watch(
-    () => props.stop,
-    (stop) => {
-      if (stop) {
-        sprite.value.stop()
-        sprite.value.go(0)
-        emit('stop')
-      }
-    },
-    { immediate: true }
-  )
+  function playAnimation() {
+    console.log('PLAYING ANIMATION')
+    sprite.value.play()
+    emit('playing')
+  }
+  function pauseAnimation() {
+    sprite.value.pause()
+    emit('paused')
+  }
+  function stopAnimation() {
+    sprite.value.stop()
+    emit('stop')
+  }
+  function playOnceAnimation() {
+    sprite.value.playOnce().then(() => {
+      emit('playedOnce')
+      stopAnimation()
+    })
+  }
+  function setCurrentAnimation(name: string) {
+    sprite.value.currentAnimation = name
+  }
 
-  watch(
-    () => props.playOnce,
-    (playOnce) => {
-      if (playOnce) {
-        sprite.value.playOnce().then(() => {
-          emit('playedOnce')
-          sprite.value.stop()
-        })
-      }
-    },
-    { immediate: true }
-  )
   return {
-    style,
+    imgStyle,
+    containerStyle,
     scaleStyle,
     sprite,
-    isLoading
+    isLoading,
+    play: playAnimation,
+    pause: pauseAnimation,
+    stop: stopAnimation,
+    playOnce: playOnceAnimation,
+    setCurrentAnimation
   }
 }

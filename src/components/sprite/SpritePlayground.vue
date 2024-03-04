@@ -1,15 +1,14 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { usePlayer } from '@/composables'
 
 import { Sprite } from '@/components/'
+import { SpriteB } from '@/components/'
 
-const spriteRef = ref<HTMLElement | null>(null) as any
-const sprite = computed(() => spriteRef.value?.sprite)
-const animations = computed(() => sprite.value?.animations)
+const sprite = ref<HTMLElement | null>(null) as any
+const animations = computed(() => sprite.value?.sprite.animations)
 
-const { state, play, playOnce, pause, stop } = usePlayer()
-
+const playing = ref(false)
+const stopped = ref(true)
 function selectSprite(payload: Event) {
   if (!sprite.value) return
   const target = payload.target as HTMLInputElement
@@ -20,37 +19,66 @@ function selectSprite(payload: Event) {
   }
 }
 
+function doStop() {
+  sprite.value.setCurrentAnimation('Stand')
+  stopped.value = true
+  playing.value = false
+}
+
+function doPlay() {
+  sprite.value.setCurrentAnimation('Walk')
+  sprite.value.play()
+  playing.value = true
+  stopped.value = false
+}
+
+function doPlayOnce() {
+  sprite.value.setCurrentAnimation('Walk')
+  sprite.value.playOnce()
+}
+
+const doJump = () => {
+  sprite.value.setCurrentAnimation('Jump')
+  sprite.value.playOnce()
+}
+
+const buttons = ref({
+  play: doPlay,
+  stop: doStop,
+  playOnce: doPlayOnce,
+  pause: sprite.value?.pause,
+  jump: doJump
+})
 onMounted(() => {
-  const stop = 0
+  const handler = (event: KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      if (playing.value) {
+        doStop()
+      } else if (stopped.value) {
+        doPlay()
+      }
+    }
+  }
+
+  window.addEventListener('keydown', handler)
+
+  // onBeforeUnmount(() => {
+  //   window.removeEventListener('keydown', handler)
+  // })
 })
 </script>
 <template>
   <div>
     <div class="controls">
       <button
+        v-for="(action, key) in buttons"
+        :key="key"
         class="control"
-        @click="play"
+        @click="action"
       >
-        Play
+        {{ key }}
       </button>
-      <button
-        class="control"
-        @click="playOnce"
-      >
-        Play Once
-      </button>
-      <button
-        class="control"
-        @click="pause"
-      >
-        Pause
-      </button>
-      <button
-        class="control"
-        @click="stop"
-      >
-        Stop
-      </button>
+
       <select
         class="control"
         @change="selectSprite"
@@ -65,11 +93,12 @@ onMounted(() => {
         </option>
       </select>
     </div>
-    <Sprite
-      ref="spriteRef"
+    <SpriteB
+      ref="sprite"
       class="sprite"
-      v-bind="state"
+      @stop="doStop"
     />
+    <div class="line"></div>
   </div>
 </template>
 
@@ -84,5 +113,14 @@ onMounted(() => {
   position: relative;
   top: 100px;
   left: 100px;
+}
+
+.line {
+  width: 100%;
+  height: 4px;
+  background-color: black;
+  position: absolute;
+  top: 57%;
+  left: 0;
 }
 </style>
