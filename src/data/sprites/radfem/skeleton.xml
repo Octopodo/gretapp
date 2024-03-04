@@ -21,4 +21,16 @@
    <link in="Top" out="1"/>
   </links>
  </skeleton>
+ <skeleton name="Top_2">
+  <nodes>
+   <read id="0" name="Stand"/>
+   <read id="1" name="Jump"/>
+   <read id="2" name="Walk"/>
+  </nodes>
+  <links>
+   <link in="Top" out="0"/>
+   <link in="Top" out="1"/>
+   <link in="Top" out="2"/>
+  </links>
+ </skeleton>
 </skeletons>

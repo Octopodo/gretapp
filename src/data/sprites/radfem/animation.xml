@@ -1,6 +1,7 @@
 <animations>
  <animation name="Radfem_Top">
   <attrlinks>
+   <attrlink attr="opacity" node="Stand" value="1"/>
    <attrlink attr="opacity" node="Jump" value="1"/>
    <attrlink attr="pivot" node="Walk" timedvalue="PIVOT-TV-Walk"/>
    <attrlink attr="opacity" node="Walk" value="1"/>
