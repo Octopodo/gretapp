@@ -1,9 +1,14 @@
 <animations>
- <animation name="Activista_1_Top">
+ <animation name="Radfem_Top">
   <attrlinks>
+   <attrlink attr="opacity" node="Jump" value="1"/>
+   <attrlink attr="pivot" node="Walk" timedvalue="PIVOT-TV-Walk"/>
    <attrlink attr="opacity" node="Walk" value="1"/>
-   <attrlink attr="opacity" node="Standing" value="1"/>
   </attrlinks>
-  <timedvalues/>
+  <timedvalues>
+   <pivot name="PIVOT-TV-Walk">
+    <pt x="0" y="1" z="0" start="1"/>
+   </pivot>
+  </timedvalues>
  </animation>
 </animations>
