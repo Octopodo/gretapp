@@ -1,23 +1,14 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import anime from 'animejs'
 
 import { Sprite } from '@/components/'
-import { SpriteB } from '@/components/'
 
 const sprite = ref<HTMLElement | null>(null) as any
 const animations = computed(() => sprite.value?.sprite.animations)
 
 const playing = ref(false)
 const stopped = ref(true)
-function selectSprite(payload: Event) {
-  if (!sprite.value) return
-  const target = payload.target as HTMLInputElement
-  const oldName = sprite.value.currentAnimation.name
-  sprite.value.currentAnimation = target?.value
-  if (sprite.value.currentAnimation.name !== oldName) {
-    stop()
-  }
-}
 
 function doStop() {
   sprite.value.setCurrentAnimation('Stand')
@@ -33,20 +24,48 @@ function doPlay() {
 }
 
 function doPlayOnce() {
-  sprite.value.setCurrentAnimation('Walk')
-  sprite.value.playOnce()
+  if (playing.value) {
+    return
+  }
+  // sprite.value.setCurrentAnimation('Walk')
+  playing.value = true
+  stopped.value = false
+  sprite.value.playOnce().then(() => {
+    playing.value = false
+    stopped.value = true
+  })
 }
 
-const doJump = () => {
+const fps = 1000 / 12
+const keyFrames = [0, -100, -300, -330, 0]
+
+const pause = (duration: number): Promise<void> =>
+  new Promise((resolve) => setTimeout(resolve, duration))
+
+const doJump = async () => {
+  if (playing.value) {
+    return
+  }
   sprite.value.setCurrentAnimation('Jump')
-  sprite.value.playOnce()
+  let promise: Promise<void> = Promise.resolve()
+  keyFrames.forEach((frame) => {
+    promise = promise.then(() => {
+      anime.set('.sprite', { translateY: frame })
+      return pause(fps)
+    })
+  })
+  doPlayOnce()
+}
+
+const doPause = () => {
+  sprite.value.pause()
 }
 
 const buttons = ref({
   play: doPlay,
   stop: doStop,
   playOnce: doPlayOnce,
-  pause: sprite.value?.pause,
+  pause: doPause,
   jump: doJump
 })
 onMounted(() => {
@@ -59,6 +78,11 @@ onMounted(() => {
       }
     }
   }
+  window.addEventListener('keydown', (event) => {
+    if (event.key === ' ') {
+      doJump()
+    }
+  })
 
   window.addEventListener('keydown', handler)
 
@@ -78,26 +102,16 @@ onMounted(() => {
       >
         {{ key }}
       </button>
-
-      <select
-        class="control"
-        @change="selectSprite"
-      >
-        <option
-          v-for="(animation, index) in animations"
-          :key="index"
-          :value="animation"
-          :selected="animation === sprite.currentAnimation.name"
-        >
-          {{ animation }}
-        </option>
-      </select>
     </div>
-    <SpriteB
+
+    <Sprite
       ref="sprite"
       class="sprite"
+      :scale="0.4"
       @stop="doStop"
+      @keydown.space="doJump"
     />
+
     <div class="line"></div>
   </div>
 </template>
@@ -110,8 +124,8 @@ onMounted(() => {
 }
 
 .sprite {
-  position: relative;
-  top: 100px;
+  position: absolute;
+  /* top: 100px; */
   left: 100px;
 }
 
@@ -120,7 +134,8 @@ onMounted(() => {
   height: 4px;
   background-color: black;
   position: absolute;
-  top: 57%;
+  top: 62%;
+  top: 65%;
   left: 0;
 }
 </style>

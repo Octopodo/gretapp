@@ -32,36 +32,40 @@ export const useSprite = (
 
   //Implement multi file support
   const src = computed(() => `/assets/sprites/${name.value}-1.png`)
-  const { state: image } = useImage({ src: src.value })
-  const width = computed(() => image.value?.width)
-  const height = computed(() => image.value?.height)
+
   const sprite = ref(new HarmonySprite(name.value))
   const maxHeigth = ref(sprite.value.maxHeight)
+  const maxWidth = ref(sprite.value.maxWidth)
   const currentAnimation = computed(() => sprite.value.currentAnimation)
   const currentFrame = computed(() => currentAnimation.value.currentFrame)
 
   const top = computed(() => (maxHeigth.value - currentFrame.value.height) / 2)
-
-  const frameCenterX = currentFrame.value.width / 2
+  const scale = computed(() => props.scale)
+  const frameCenterX = currentFrame.value.width
   const frameCenterY = currentFrame.value.height
 
-  sprite.value.currentAnimation = 'Standing'
+  sprite.value.currentAnimation = 'Stand'
 
-  const { state: isLoading } = useImage({ src: src.value })
-  const scaleStyle = computed(() => {
+  const { isLoading } = useImage({ src: src.value })
+
+  const spriteBox = computed(() => {
     return {
-      transform: `scale(${props.scale})`,
-      transformOrigin: 'bottom center'
+      position: 'absolute',
+      width: `${maxWidth.value}px`,
+      height: `${maxHeigth.value}px`,
+      transformOrigin: `${frameCenterX}px ${frameCenterY}px`,
+      transform: `scale(${scale.value})`,
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center'
     } as StyleValue
   })
-
   const containerStyle = computed(() => {
     return {
       position: 'relative',
       width: `${currentFrame.value.width}px`,
       height: `${currentFrame.value.height}px`,
       top: `${top.value}px`,
-      transformOrigin: 'bottom center',
       overflow: 'hidden'
     } as StyleValue
   })
@@ -73,9 +77,8 @@ export const useSprite = (
       left: `${-currentFrame.value.x}px`,
       transform: `
         scaleX(${props.direction}) 
-        scale(${props.scale})
+        
         `,
-      transformOrigin: `${frameCenterX}px ${frameCenterY}px`,
 
       pointerEvents: 'none'
     } as StyleValue
@@ -107,13 +110,13 @@ export const useSprite = (
   return {
     imgStyle,
     containerStyle,
-    scaleStyle,
     sprite,
     isLoading,
     play: playAnimation,
     pause: pauseAnimation,
     stop: stopAnimation,
     playOnce: playOnceAnimation,
-    setCurrentAnimation
+    setCurrentAnimation,
+    spriteBox
   }
 }

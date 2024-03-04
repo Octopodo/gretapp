@@ -4,6 +4,7 @@ export abstract class Sprite {
   protected _frames: any[]
   protected _currentAnimation: any
   protected _maxHeight: number
+  protected _maxWidth: number
 
   constructor() {
     this._animations = []
@@ -22,15 +23,15 @@ export abstract class Sprite {
   }
 
   get maxHeight() {
-    const max = this._animations.reduce((acc: number, a: any) => {
-      return a.maxHeight > acc ? a.maxHeight : acc
-    }, 0)
-    return max
+    return Math.max(...this._frames.map((f: any) => f.height))
+  }
+
+  get maxWidth() {
+    return Math.max(...this._frames.map((f: any) => f.width))
   }
 
   set currentAnimation(name: string) {
     const animationIndex = this._animations.findIndex((a: any) => {
-      console.log('CHECKING NAMES', a.name, name)
       return a.name === name
     })
     if (animationIndex !== -1) {

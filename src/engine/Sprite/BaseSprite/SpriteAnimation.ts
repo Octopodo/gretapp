@@ -8,6 +8,7 @@ export abstract class SpriteAnimation {
   protected _currentFrameIndex: Ref<number>
   protected _numberOfFrames: number
   protected _maxHeight: number
+  protected _maxWidth: number
   private _interval: NodeJS.Timeout
   private _fpsInSecs: number
 
@@ -26,9 +27,8 @@ export abstract class SpriteAnimation {
     this._fpsInSecs = 1000 / this._frameRate
     this._currentFrameIndex = frameList.index
     this._interval = setInterval(() => {}, this._fpsInSecs)
-    this._maxHeight = frames.reduce((acc: number, frame: any) => {
-      return frame.height > acc ? frame.height : acc
-    }, 0)
+    this._maxHeight = Math.max(...frames.map((f: any) => f.height))
+    this._maxWidth = Math.max(...frames.map((f: any) => f.width))
     this.next = frameList.next
     this.prev = frameList.prev
     this.go = frameList.go
@@ -47,6 +47,10 @@ export abstract class SpriteAnimation {
 
   get maxHeight() {
     return this._maxHeight
+  }
+
+  get maxWidth() {
+    return this._maxWidth
   }
 
   set frameRate(frameRate: number) {
