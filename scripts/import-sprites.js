@@ -112,11 +112,12 @@ function copySpriteFolder(dir) {
   )
 
   copyDir(dir, detinyDataPath)
+  importedFiles.push(...toGitPaths(detinyDataPath))
 
   copyFiles(spriteFileDir, detinySpritePath, (file, index) => {
     const newFile = renameFile(file, `${spriteName}-${index + 1}`)
+    importedFiles.push(...toGitPaths(newFile))
     const fileName = path.basename(newFile)
-    importedFiles.push(...toGitPaths(detinyDataPath))
     const publicPath = STATIC_SPRITE_PATH.replace('/public', '')
     const filePath = path.join(publicPath, fileName).replace(/\\/g, '/')
     newFiles.push(filePath)
