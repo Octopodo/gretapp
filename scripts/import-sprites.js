@@ -38,10 +38,41 @@ const SPRITE_DATA_COPY_PATH = path.join(__dirname, STATIC_SPRITE_DATA_PATH)
 const FOLDERS_TO_REMOVE = ['audio', 'spriteSheets']
 const PATH_DATA_FILE = 'paths.json'
 
-////////////////////////////////////////
-//IMPORT SPRITE
+const importedFiles = []
+const removedFiles = []
 
 const exec = promisify(execCb)
+
+////////////////////////////////////////
+//GIT COMMANDS
+
+async function gitCommit(action, files, message) {
+  files = files.join(' ')
+  action = action === 'remove' ? 'add -u' : 'add'
+  const command = `git ${action} ${files} && git commit -m "${message}"`
+  try {
+    const { stdout } = await exec(command)
+    console.log(stdout)
+  } catch (error) {
+    console.error(`Error: ${error}`)
+  }
+}
+
+function toGitPaths(paths) {
+  paths = Array.isArray(paths) ? paths : [paths]
+  const gitPaths = paths.map((file) => {
+    const rootDir = path.resolve(__dirname, '..')
+    let relativePath = path.relative(rootDir, file)
+    relativePath = relativePath.replace(/\\/g, '/')
+    const pathComponents = relativePath.split('/')
+    const newPathComponents = pathComponents.slice(1)
+    return newPathComponents.join('/')
+  })
+  return gitPaths
+}
+
+////////////////////////////////////////
+//IMPORT SPRITE
 
 async function OpenFileDialog() {
   try {
@@ -83,9 +114,11 @@ function copySpriteFolder(dir) {
   copyFiles(spriteFileDir, detinySpritePath, (file, index) => {
     const newFile = renameFile(file, `${spriteName}-${index + 1}`)
     const fileName = path.basename(newFile)
+    importedFiles.push(...toGitPaths(detinyDataPath))
     const publicPath = STATIC_SPRITE_PATH.replace('/public', '')
     const filePath = path.join(publicPath, fileName).replace(/\\/g, '/')
     newFiles.push(filePath)
+    return newFile
   })
 
   for (const folder of FOLDERS_TO_REMOVE) {
@@ -155,19 +188,23 @@ function checkSpriteFolders(dir) {
 
 function deleteSprite(spriteName) {
   const spriteDataPath = path.join(SPRITE_DATA_COPY_PATH, spriteName)
-  const spriteFilesPath = path.join(SPRITE_COPY_PATH, spriteName)
+
+  let rmFiles = []
 
   if (fs.existsSync(spriteDataPath)) {
-    deleteFolderAndContents(spriteDataPath)
+    rmFiles = deleteFolderAndContents(spriteDataPath)
   }
 
   fs.readdirSync(SPRITE_COPY_PATH).forEach((file) => {
     if (file.startsWith(spriteName)) {
-      fs.unlinkSync(path.join(SPRITE_COPY_PATH, file))
+      const fileToRemove = path.join(SPRITE_COPY_PATH, file)
+      fs.unlinkSync(fileToRemove)
+      rmFiles.push(fileToRemove)
     }
   })
 
   removeFromIndexFile(SPRITE_DATA_COPY_PATH, spriteName)
+  removedFiles.push(...rmFiles)
 }
 
 function removeFromIndexFile(dir, spriteName) {
@@ -200,6 +237,8 @@ function importSpritesFromDialog() {
 
 ////////////////////////////////////////
 //COMMAND LINE INTERFACE
+
+const commit = true
 program.version('1.0.0').description('Sprite management tool for Gretapp')
 
 program
@@ -207,6 +246,9 @@ program
   .description('Import a sprite')
   .action(() => {
     importSpritesFromDialog()
+    if (commit) {
+      gitCommit('add', importedFiles, `Imported sprite ${spriteName}`)
+    }
   })
 
 program
@@ -219,6 +261,9 @@ program
       })
     } else if (typeof sprites === 'string') {
       deleteSprite(sprites)
+    }
+    if (commit) {
+      gitCommit('remove', removedFiles, `Removed sprite ${spriteName}`)
     }
   })
 program.parse(process.argv)

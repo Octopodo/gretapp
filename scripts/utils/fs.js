@@ -1,7 +1,10 @@
 import fs from 'fs'
 import path from 'path'
-
+import url from 'url'
+const __dirname = path.dirname(url.fileURLToPath(import.meta.url))
+const rootDir = path.join(__dirname, '../../')
 export function copyDir(src, dest) {
+  const copyedFiles = []
   fs.mkdirSync(dest, { recursive: true })
 
   let entries = fs.readdirSync(src, { withFileTypes: true })
@@ -14,11 +17,15 @@ export function copyDir(src, dest) {
       copyDir(srcPath, destPath)
     } else {
       fs.copyFileSync(srcPath, destPath)
+      copyedFiles.push(destPath)
     }
   }
+  return copyedFiles
 }
 
 export function copyFiles(srcDir, destDir, callback) {
+  let newFile
+  const copyedFiles = []
   fs.mkdirSync(destDir, { recursive: true })
 
   const files = fs.readdirSync(srcDir)
@@ -29,9 +36,15 @@ export function copyFiles(srcDir, destDir, callback) {
 
     if (fs.statSync(srcFile).isFile()) {
       fs.copyFileSync(srcFile, destFile)
-      if (callback) callback(destFile, index)
+      if (callback) {
+        newFile = callback(destFile, index)
+      } else {
+        newFile = destFile
+      }
+      copyedFiles.push(newFile)
     }
   })
+  return copyedFiles
 }
 
 export function renameFile(oldPath, newName) {
@@ -44,6 +57,7 @@ export function renameFile(oldPath, newName) {
 }
 
 export function deleteFolderAndContents(folderPath) {
+  const removedFiles = []
   if (fs.existsSync(folderPath)) {
     fs.readdirSync(folderPath).forEach((file, index) => {
       const curPath = path.join(folderPath, file)
@@ -53,8 +67,10 @@ export function deleteFolderAndContents(folderPath) {
       } else {
         // delete file
         fs.unlinkSync(curPath)
+        removedFiles.push(curPath)
       }
     })
     fs.rmdirSync(folderPath)
   }
+  return removedFiles
 }
