@@ -204,7 +204,7 @@ function deleteSprite(spriteName) {
   })
 
   removeFromIndexFile(SPRITE_DATA_COPY_PATH, spriteName)
-  removedFiles.push(...rmFiles)
+  removedFiles.push(...toGitPaths(rmFiles))
 }
 
 function removeFromIndexFile(dir, spriteName) {
