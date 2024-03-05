@@ -67,7 +67,7 @@ function createComponent(name, dir) {
   const moduleIndexFilePath = findIndexFile(componentPath)
   const componentFileTemplate = componentTemplate(componentName)
 
-  if (fs.existsSync(componentFolder)) {
+  if (fs.existsSync(componentFolder) && fs.existsSync(componentFilePath)) {
     console.error(`Component ${componentName} already exists`)
     process.exit(1)
   }
