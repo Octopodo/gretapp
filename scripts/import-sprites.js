@@ -227,11 +227,13 @@ if (!spriteName) {
 }
 
 function importSpritesFromDialog() {
-  const dir = OpenFileDialog()
-  dir.then((result) => {
-    if (!result) return console.log('No directory selected')
-    const dir = path.dirname(result)
-    importSprites(dir)
+  return new Promise(() => {
+    const dir = OpenFileDialog()
+    dir.then((result) => {
+      if (!result) return console.log('No directory selected')
+      const dir = path.dirname(result)
+      importSprites(dir)
+    })
   })
 }
 
@@ -245,10 +247,11 @@ program
   .command('import')
   .description('Import a sprite')
   .action(() => {
-    importSpritesFromDialog()
-    if (commit) {
-      gitCommit('add', importedFiles, `Imported sprite ${spriteName}`)
-    }
+    importSpritesFromDialog().then(() => {
+      if (commit) {
+        gitCommit('add', importedFiles, `Imported sprite ${spriteName}`)
+      }
+    })
   })
 
 program
