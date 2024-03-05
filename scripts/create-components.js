@@ -11,7 +11,7 @@ import {
 } from './utils/fileTemplates/vueTemplates.js'
 
 import { vitestTemplate } from './utils/fileTemplates/vitestTemplates.js'
-import { gitCommit } from './utils/git.js'
+import { GitCommander } from './utils/git.js'
 import { capitalize } from './utils/string.js'
 import {
   findIndexFile,
@@ -21,13 +21,12 @@ import {
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.join(dirname(__filename), '..')
+const git = new GitCommander()
 
 const COMPONENTS_STATIC_PATH = 'src/components'
 const COMPOSABLES_STATIC_PATH = 'src/composables'
 const COMPONENTS_PATH = path.join(__dirname, COMPONENTS_STATIC_PATH)
 const COMPOSABLES_PATH = path.join(__dirname, COMPOSABLES_STATIC_PATH)
-
-const modifiedFiles = []
 
 program
   .version('1.0.0')
@@ -59,7 +58,7 @@ program
     }
 
     if (this.opts().commit) {
-      gitCommit('add', modifiedFiles, `Created ${this.args[0]} ${this.args[1]}`)
+      git.commit('add', `Created ${this.args[0]} ${this.args[1]}`)
     }
   })
 
@@ -111,9 +110,9 @@ function createComponent(name, dir, addTest) {
   )
   if (paths.moduleIndexFilePath) {
     appendExportToIndexFile('', paths.componentPath, `./${paths.componentName}`)
-    modifiedFiles.push(paths.moduleIndexFilePath)
+    git.add(paths.moduleIndexFilePath)
   }
-  modifiedFiles.push(paths.componentFolder)
+  git.add(paths.componentFolder)
 }
 
 function generateComposablePaths(name, dir) {
@@ -180,7 +179,7 @@ function createComposable(name, dir, addTest, isStyle) {
       `./${paths.composablePath}`,
       `./${paths.composableFunctionName}`
     )
-    modifiedFiles.push(paths.moduleIndexFilePath)
+    git.add(paths.moduleIndexFilePath)
   }
-  modifiedFiles.push(paths.composableFolder)
+  git.add(paths.composableFolder)
 }
