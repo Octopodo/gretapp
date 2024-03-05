@@ -9,11 +9,14 @@ import {
   renameFile,
   deleteFolderAndContents
 } from './utils/fs.js'
-import { gitCommit } from './utils/git.js'
+import { GitCommander } from './utils/git.js'
 
 import { createIndexFile, appendToIndexFile } from './utils/modules.js'
 
 import { program } from 'commander'
+
+const git = new GitCommander()
+const __dirname = path.resolve(path.dirname(''))
 
 const ANIMATION_XML = 'animation.xml'
 const DRAWING_ANIMATION_XML = 'drawingAnimation.xml'
@@ -29,7 +32,6 @@ const REQUIRED_FILES = [
   STAGE_XML
 ]
 
-const __dirname = path.resolve(path.dirname(''))
 const REQUIRED_FOLDERS = ['spriteSheets']
 const SPRITES_PATH = 'spriteSheets'
 const STATIC_SPRITE_PATH = '/public/assets/sprites'
@@ -39,10 +41,40 @@ const SPRITE_DATA_COPY_PATH = path.join(__dirname, STATIC_SPRITE_DATA_PATH)
 const FOLDERS_TO_REMOVE = ['audio', 'spriteSheets']
 const PATH_DATA_FILE = 'paths.json'
 
-const importedFiles = []
-const removedFiles = []
-
 const exec = promisify(execCb)
+
+program.version('1.0.0').description('Sprite management tool for Gretapp')
+program
+
+program
+  .command('import-sprites')
+  .description('Import a sprite')
+  .option('-c, --commit', 'Commit changes to git')
+  .action(async function () {
+    await importSpritesFromDialog()
+    if (this.opts().commit) {
+      git.commit('add', `Imported sprite ${spriteName}`)
+    }
+  })
+
+program
+  .command('delete-sprites')
+  .argument('<sprites...>', 'Sprites to delete')
+  .option('-c, --commit', 'Commit changes to git')
+  .description('Delete sprites')
+  .action((sprites, options) => {
+    if (Array.isArray(sprites)) {
+      sprites.forEach((spriteName) => {
+        deleteSprite(spriteName)
+      })
+    } else if (typeof sprites === 'string') {
+      deleteSprite(sprites)
+    }
+    if (options.commit) {
+      git.commit('remove', `Removed sprite ${spriteName}`)
+    }
+  })
+program.parse(process.argv)
 
 ////////////////////////////////////////
 //IMPORT SPRITE
@@ -83,11 +115,11 @@ function copySpriteFolder(dir) {
   )
 
   copyDir(dir, detinyDataPath)
-  importedFiles.push(detinyDataPath)
+  git.add(detinyDataPath)
 
   copyFiles(spriteFileDir, detinySpritePath, (file, index) => {
     const newFile = renameFile(file, `${spriteName}-${index + 1}`)
-    importedFiles.push(newFile)
+    git.add(newFile)
     const fileName = path.basename(newFile)
     const publicPath = STATIC_SPRITE_PATH.replace('/public', '')
     const filePath = path.join(publicPath, fileName).replace(/\\/g, '/')
@@ -115,14 +147,14 @@ function idnexFiles(dir) {
   const indexFileData = `${importPathsData}${exportSpriteSheetData}${exportAnimationsData}${pathsData}`
   const indexFile = createIndexFile(dir, true)
   appendToIndexFile(indexFile, indexFileData)
-  importedFiles.push(indexFile)
+  git.add(indexFile)
 
   const parentDir = path.dirname(dir)
   const parentIndexFile = createIndexFile(parentDir)
   if (!parentIndexFile) return
   const parentIndexFileData = `export * as ${spriteName} from './${spriteName}'\n`
   appendToIndexFile(parentIndexFile, parentIndexFileData)
-  importedFiles.push(parentIndexFile)
+  git.add(parentIndexFile)
 }
 
 function createStaticPathsDataFile(newFiles, destPath) {
@@ -180,7 +212,7 @@ function deleteSprite(spriteName) {
   })
 
   removeFromIndexFile(SPRITE_DATA_COPY_PATH, spriteName)
-  removedFiles.push(...rmFiles)
+  git.add(...rmFiles)
 }
 
 function removeFromIndexFile(dir, spriteName) {
@@ -196,7 +228,7 @@ function removeFromIndexFile(dir, spriteName) {
   fileContents = fileContents.replace(importLine, '')
   fs.writeFileSync(indexFilePath, fileContents, 'utf8')
   if (oldContents === fileContents) return
-  removedFiles.push(indexFilePath)
+  git.add(indexFilePath)
 }
 
 const spriteName = process.argv[2]
@@ -213,40 +245,3 @@ async function importSpritesFromDialog() {
     await importSprites(dir)
   })
 }
-
-////////////////////////////////////////
-//COMMAND LINE INTERFACE
-
-const commit = true
-program.version('1.0.0').description('Sprite management tool for Gretapp')
-program
-
-program
-  .command('import-sprites')
-  .description('Import a sprite')
-  .option('-c, --commit', 'Commit changes to git')
-  .action(async function () {
-    await importSpritesFromDialog()
-    if (this.opts().commit) {
-      gitCommit('add', importedFiles, `Imported sprite ${spriteName}`)
-    }
-  })
-
-program
-  .command('delete-sprites')
-  .argument('<sprites...>', 'Sprites to delete')
-  .option('-c, --commit', 'Commit changes to git')
-  .description('Delete sprites')
-  .action((sprites, options) => {
-    if (Array.isArray(sprites)) {
-      sprites.forEach((spriteName) => {
-        deleteSprite(spriteName)
-      })
-    } else if (typeof sprites === 'string') {
-      deleteSprite(sprites)
-    }
-    if (options.commit) {
-      gitCommit('remove', removedFiles, `Removed sprite ${spriteName}`)
-    }
-  })
-program.parse(process.argv)
