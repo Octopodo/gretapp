@@ -248,21 +248,25 @@ async function importSpritesFromDialog() {
 
 const commit = true
 program.version('1.0.0').description('Sprite management tool for Gretapp')
+program
 
 program
-  .command('import')
+  .command('import-sprites')
   .description('Import a sprite')
-  .action(async () => {
+  .option('-c, --commit', 'Commit changes to git')
+  .action(async function () {
     await importSpritesFromDialog()
-    if (commit) {
+    if (this.options().commit) {
       gitCommit('add', importedFiles, `Imported sprite ${spriteName}`)
     }
   })
 
 program
-  .command('delete [sprites...]')
+  .command('delete-sprites')
+  .option('-c, --commit', 'Commit changes to git')
+  .argument('[sprites...]', 'Sprites to delete')
   .description('Delete sprites')
-  .action((sprites) => {
+  .action((sprites, options) => {
     if (Array.isArray(sprites)) {
       sprites.forEach((spriteName) => {
         deleteSprite(spriteName)
@@ -270,7 +274,7 @@ program
     } else if (typeof sprites === 'string') {
       deleteSprite(sprites)
     }
-    if (commit) {
+    if (options.commit) {
       gitCommit('remove', removedFiles, `Removed sprite ${spriteName}`)
     }
   })
