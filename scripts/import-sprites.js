@@ -47,6 +47,8 @@ const exec = promisify(execCb)
 //GIT COMMANDS
 
 async function gitCommit(action, files, message) {
+  if (!files.length) return console.log('No files to commit')
+
   files = files.join(' ')
   action = action === 'remove' ? 'add -u' : 'add'
   const command = `git ${action} ${files} && git commit -m "${message}"`
