@@ -141,12 +141,14 @@ function idnexFiles(dir) {
   const indexFileData = `${importPathsData}${exportSpriteSheetData}${exportAnimationsData}${pathsData}`
   const indexFile = createIndexFile(dir, true)
   appendToIndexFile(indexFile, indexFileData)
+  importedFiles.push(...toGitPaths(indexFile))
 
   const parentDir = path.dirname(dir)
   const parentIndexFile = createIndexFile(parentDir)
   if (!parentIndexFile) return
   const parentIndexFileData = `export * as ${spriteName} from './${spriteName}'\n`
   appendToIndexFile(parentIndexFile, parentIndexFileData)
+  importedFiles.push(parentIndexFile)
 }
 
 function createStaticPathsDataFile(newFiles, destPath) {
@@ -216,8 +218,11 @@ function removeFromIndexFile(dir, spriteName) {
 
   let fileContents = fs.readFileSync(indexFilePath, 'utf8')
   const importLine = `export * as ${spriteName} from './${spriteName}'\n`
+  const oldContents = fileContents
   fileContents = fileContents.replace(importLine, '')
   fs.writeFileSync(indexFilePath, fileContents, 'utf8')
+  if (oldContents === fileContents) return
+  removedFiles.push(...toGitPaths([indexFilePath]))
 }
 
 const spriteName = process.argv[2]
@@ -228,7 +233,7 @@ if (!spriteName) {
 
 async function importSpritesFromDialog() {
   const dir = OpenFileDialog()
-  dir.then(async (result) => {
+  await dir.then(async (result) => {
     if (!result) return console.log('No directory selected')
     const dir = path.dirname(result)
     await importSprites(dir)
