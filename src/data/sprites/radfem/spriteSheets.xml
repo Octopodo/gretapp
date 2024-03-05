@@ -1,0 +1,19 @@
+<!DOCTYPE spritesheets>
+<spritesheets>
+ <spritesheet resolution="Grettap" width="4096" height="2048" name="sheet_Top" filename="spriteSheets/sheet_Top-Grettap.png">
+  <sprite scaleY="0.0284444" angleDegrees="0" rect="3754,522,323,731" offsetX="-63.0875" offsetY="169.027" name="3-Jump-2.png" scaleX="0.0284444"/>
+  <sprite scaleY="0.0284444" angleDegrees="0" rect="3422,522,332,583" offsetX="-53.5184" offsetY="-28.2441" name="2-Stand-1.png" scaleX="0.0284444"/>
+  <sprite scaleY="0.0284444" angleDegrees="0" rect="3022,522,400,553" offsetX="-31.929" offsetY="279.287" name="3-Jump-3.png" scaleX="0.0284444"/>
+  <sprite scaleY="0.0284444" angleDegrees="0" rect="2644,522,378,535" offsetX="-20.6954" offsetY="307.979" name="3-Jump-6.png" scaleX="0.0284444"/>
+  <sprite scaleY="0.0284444" angleDegrees="0" rect="2241,522,403,532" offsetX="-0.564425" offsetY="-30.7603" name="1-Walk-5.png" scaleX="0.0284444"/>
+  <sprite scaleY="0.0284444" angleDegrees="0" rect="1843,522,398,532" offsetX="-8.30637" offsetY="-29.6455" name="1-Walk-1.png" scaleX="0.0284444"/>
+  <sprite scaleY="0.0284444" angleDegrees="0" rect="1489,522,354,532" offsetX="4.64552" offsetY="-28.2353" name="1-Walk-4.png" scaleX="0.0284444"/>
+  <sprite scaleY="0.0284444" angleDegrees="0" rect="1123,522,366,526" offsetX="1.79877" offsetY="-29.329" name="1-Walk-8.png" scaleX="0.0284444"/>
+  <sprite scaleY="0.0284444" angleDegrees="0" rect="705,522,418,525" offsetX="-1.04269" offsetY="-35.9984" name="1-Walk-2.png" scaleX="0.0284444"/>
+  <sprite scaleY="0.0284444" angleDegrees="0" rect="341,522,364,523" offsetX="-16.0023" offsetY="-55.2883" name="3-Jump-1.png" scaleX="0.0284444"/>
+  <sprite scaleY="0.0284444" angleDegrees="0" rect="0,522,341,517" offsetX="0.68575" offsetY="-33.8725" name="1-Walk-7.png" scaleX="0.0284444"/>
+  <sprite scaleY="0.0284444" angleDegrees="0" rect="3671,0,406,522" offsetX="0.128358" offsetY="-41.3718" name="1-Walk-3.png" scaleX="0.0284444"/>
+  <sprite scaleY="0.0284444" angleDegrees="0" rect="3281,0,390,519" offsetX="2.11176" offsetY="-36.714" name="1-Walk-6.png" scaleX="0.0284444"/>
+  <sprite scaleY="0.0284444" angleDegrees="0" rect="2891,0,390,496" offsetX="-35.4013" offsetY="-63.0785" name="3-Jump-5.png" scaleX="0.0284444"/>
+ </spritesheet>
+</spritesheets>
