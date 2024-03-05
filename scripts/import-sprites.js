@@ -226,14 +226,12 @@ if (!spriteName) {
   process.exit(1)
 }
 
-function importSpritesFromDialog() {
-  return new Promise(() => {
-    const dir = OpenFileDialog()
-    dir.then((result) => {
-      if (!result) return console.log('No directory selected')
-      const dir = path.dirname(result)
-      importSprites(dir)
-    })
+async function importSpritesFromDialog() {
+  const dir = OpenFileDialog()
+  dir.then(async (result) => {
+    if (!result) return console.log('No directory selected')
+    const dir = path.dirname(result)
+    await importSprites(dir)
   })
 }
 
@@ -246,12 +244,11 @@ program.version('1.0.0').description('Sprite management tool for Gretapp')
 program
   .command('import')
   .description('Import a sprite')
-  .action(() => {
-    importSpritesFromDialog().then(() => {
-      if (commit) {
-        gitCommit('add', importedFiles, `Imported sprite ${spriteName}`)
-      }
-    })
+  .action(async () => {
+    await importSpritesFromDialog()
+    if (commit) {
+      gitCommit('add', importedFiles, `Imported sprite ${spriteName}`)
+    }
   })
 
 program
