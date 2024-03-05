@@ -125,7 +125,7 @@ onMounted(() => {
 
 .sprite {
   position: absolute;
-  /* top: 100px; */
+  top: -200px;
   left: 100px;
 }
 
@@ -135,7 +135,7 @@ onMounted(() => {
   background-color: black;
   position: absolute;
   top: 62%;
-  top: 65%;
+  top: 430px;
   left: 0;
 }
 </style>
