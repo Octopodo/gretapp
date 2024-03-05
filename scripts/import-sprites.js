@@ -262,7 +262,7 @@ program
   })
 
 program
-  .command('delete-sprites')
+  .command('delete-sprites | delete-sprite')
   .option('-c, --commit', 'Commit changes to git')
   .argument('[sprites...]', 'Sprites to delete')
   .description('Delete sprites')
