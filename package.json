@@ -13,9 +13,9 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "format": "prettier --write src/",
     "create": "node ./scripts/create.mjs",
-    "import-sprites": "node ./scripts/import-sprites.js import",
-    "delete-sprites": "node ./scripts/import-sprites.js delete",
-    "remove-sprites": "node ./scripts/import-sprites.js delete"
+    "import-sprites": "node ./scripts/import-sprites.js import-sprites --commit",
+    "delete-sprites": "node ./scripts/import-sprites.js delete-sprites --commit",
+    "remove-sprites": "node ./scripts/import-sprites.js delete-sprites --commit"
   },
   "dependencies": {
     "@types/animejs": "^3.1.12",

@@ -256,15 +256,15 @@ program
   .option('-c, --commit', 'Commit changes to git')
   .action(async function () {
     await importSpritesFromDialog()
-    if (this.options().commit) {
+    if (this.opts().commit) {
       gitCommit('add', importedFiles, `Imported sprite ${spriteName}`)
     }
   })
 
 program
-  .command('delete-sprites | delete-sprite')
+  .command('delete-sprites')
+  .argument('<sprites...>', 'Sprites to delete')
   .option('-c, --commit', 'Commit changes to git')
-  .argument('[sprites...]', 'Sprites to delete')
   .description('Delete sprites')
   .action((sprites, options) => {
     if (Array.isArray(sprites)) {
