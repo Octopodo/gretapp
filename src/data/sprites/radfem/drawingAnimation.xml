@@ -1,0 +1,24 @@
+<drawingAnimations>
+ <drawingAnimation spritesheet="sheet_Top" name="Radfem_Top">
+  <drawing node="Stand" name="2-Stand" drwId="1">
+   <drw skinId="0" frame="1" repeat="1" name="2-Stand-1.png"/>
+  </drawing>
+  <drawing node="Jump" name="3-Jump" drwId="2">
+   <drw skinId="0" frame="1" repeat="1" name="3-Jump-1.png"/>
+   <drw skinId="0" frame="2" repeat="1" name="3-Jump-2.png"/>
+   <drw skinId="0" frame="3" repeat="1" name="3-Jump-3.png"/>
+   <drw skinId="0" frame="4" repeat="1" name="3-Jump-6.png"/>
+   <drw skinId="0" frame="5" repeat="1" name="3-Jump-5.png"/>
+  </drawing>
+  <drawing node="Walk" name="1-Walk" drwId="3">
+   <drw skinId="0" frame="1" repeat="1" name="1-Walk-1.png"/>
+   <drw skinId="0" frame="2" repeat="1" name="1-Walk-2.png"/>
+   <drw skinId="0" frame="3" repeat="1" name="1-Walk-3.png"/>
+   <drw skinId="0" frame="4" repeat="1" name="1-Walk-4.png"/>
+   <drw skinId="0" frame="5" repeat="1" name="1-Walk-5.png"/>
+   <drw skinId="0" frame="6" repeat="1" name="1-Walk-6.png"/>
+   <drw skinId="0" frame="7" repeat="1" name="1-Walk-7.png"/>
+   <drw skinId="0" frame="8" repeat="1" name="1-Walk-8.png"/>
+  </drawing>
+ </drawingAnimation>
+</drawingAnimations>
