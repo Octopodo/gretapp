@@ -1,8 +1,0 @@
-<stages>
- <stage name="Radfem_Radfem">
-  <node groupId="0" skinId="0" name="Stand" drwId="1"/>
-  <node groupId="0" skinId="0" name="Jump" drwId="2"/>
-  <node groupId="0" skinId="0" name="Walk" drwId="3"/>
-  <play drawingAnimation="Radfem_Top" name="Top" skeleton="Top_2" animation="Radfem_Top"/>
- </stage>
-</stages>
