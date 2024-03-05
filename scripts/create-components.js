@@ -92,12 +92,19 @@ function createComponent(name, dir) {
 
 function createComposable(name, dir) {
   const composableName = capitalize(name)
+  const composableFunctionName = `use${composableName}`
   const composablePath = dir
     ? path.join(COMPOSABLES_PATH, dir)
     : COMPOSABLES_PATH
-  const composableFolder = path.join(composablePath, name.toLowerCase())
-  const composableFilePath = path.join(composableFolder, `${composableName}.ts`)
-  const testFilePath = path.join(composableFolder, `${composableName}.spec.ts`)
+  const composableFolder = path.join(composablePath, composableFunctionName)
+  const composableFilePath = path.join(
+    composableFolder,
+    `${composableFunctionName}.ts`
+  )
+  const testFilePath = path.join(
+    composableFolder,
+    `${composableFunctionName}.spec.ts`
+  )
   const moduleIndexFilePath = findIndexFile(composablePath)
   const composableFileTemplate =
     program.opts().type === 'style-composable'
@@ -112,7 +119,7 @@ function createComposable(name, dir) {
   fs.mkdirSync(composableFolder, { recursive: true })
   fs.writeFileSync(composableFilePath, composableFileTemplate)
   if (program.opts().test) {
-    fs.writeFileSync(testFilePath, vitestTemplate(composableName))
+    fs.writeFileSync(testFilePath, vitestTemplate(composableFunctionName))
   }
 
   appendExportToIndexFile(composableName, composableFolder)

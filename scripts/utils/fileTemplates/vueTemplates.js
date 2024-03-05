@@ -28,9 +28,10 @@ export function componentTemplate(name) {
 }
 
 export function composableStyleTemplate(name) {
-  const interfaceName = `${capitalize(name)}PropsInterface`
-  const propsName = `${capitalize(name)}Props`
-  const composableName = `use${capitalize(name)}`
+  name = capitalize(name)
+  const interfaceName = `use${name}PropsInterface`
+  const propsName = `${name}Props`
+  const composableName = `use${name}`
 
   return `
   import {ref, computed,  onMounted, watch, type StyleValue} from 'vue'
@@ -71,9 +72,10 @@ export function composableStyleTemplate(name) {
 }
 
 export function composableTemplate(name) {
-  const interfaceName = `${capitalize(name)}PropsInterface`
-  const propsName = `${capitalize(name)}Props`
-  const composableName = `use${capitalize(name)}`
+  name = capitalize(name)
+  const interfaceName = `use${name}PropsInterface`
+  const propsName = `${name}Props`
+  const composableName = `${name}`
 
   return `
   import {ref, computed,  onMounted, watch} from 'vue'
