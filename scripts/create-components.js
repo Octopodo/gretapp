@@ -84,11 +84,7 @@ function createComponent(name, dir) {
     componentStaticPath
   )
   if (moduleIndexFilePath) {
-    appendExportComponentToIndexFile(
-      componentName,
-      componentPath,
-      `./${componentName}`
-    )
+    appendExportToIndexFile(componentName, componentPath, `./${componentName}`)
     modifiedFiles.push(moduleIndexFilePath)
   }
   modifiedFiles.push(componentFolder)
