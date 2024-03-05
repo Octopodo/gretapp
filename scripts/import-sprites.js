@@ -9,6 +9,7 @@ import {
   renameFile,
   deleteFolderAndContents
 } from './utils/fs.js'
+import { gitCommit } from './utils/git.js'
 
 import { createIndexFile, appendToIndexFile } from './utils/modules.js'
 
@@ -42,36 +43,6 @@ const importedFiles = []
 const removedFiles = []
 
 const exec = promisify(execCb)
-
-////////////////////////////////////////
-//GIT COMMANDS
-
-async function gitCommit(action, files, message) {
-  if (!files.length) return console.log('No files to commit')
-
-  files = files.join(' ')
-  action = action === 'remove' ? 'add -u' : 'add'
-  const command = `git ${action} ${files} && git commit -m "${message}"`
-  try {
-    const { stdout } = await exec(command)
-    console.log(stdout)
-  } catch (error) {
-    console.error(`Error: ${error}`)
-  }
-}
-
-function toGitPaths(paths) {
-  paths = Array.isArray(paths) ? paths : [paths]
-  const gitPaths = paths.map((file) => {
-    const rootDir = path.resolve(__dirname, '..')
-    let relativePath = path.relative(rootDir, file)
-    relativePath = relativePath.replace(/\\/g, '/')
-    const pathComponents = relativePath.split('/')
-    const newPathComponents = pathComponents.slice(1)
-    return newPathComponents.join('/')
-  })
-  return gitPaths
-}
 
 ////////////////////////////////////////
 //IMPORT SPRITE
@@ -112,11 +83,11 @@ function copySpriteFolder(dir) {
   )
 
   copyDir(dir, detinyDataPath)
-  importedFiles.push(...toGitPaths(detinyDataPath))
+  importedFiles.push(detinyDataPath)
 
   copyFiles(spriteFileDir, detinySpritePath, (file, index) => {
     const newFile = renameFile(file, `${spriteName}-${index + 1}`)
-    importedFiles.push(...toGitPaths(newFile))
+    importedFiles.push(newFile)
     const fileName = path.basename(newFile)
     const publicPath = STATIC_SPRITE_PATH.replace('/public', '')
     const filePath = path.join(publicPath, fileName).replace(/\\/g, '/')
@@ -144,7 +115,7 @@ function idnexFiles(dir) {
   const indexFileData = `${importPathsData}${exportSpriteSheetData}${exportAnimationsData}${pathsData}`
   const indexFile = createIndexFile(dir, true)
   appendToIndexFile(indexFile, indexFileData)
-  importedFiles.push(...toGitPaths(indexFile))
+  importedFiles.push(indexFile)
 
   const parentDir = path.dirname(dir)
   const parentIndexFile = createIndexFile(parentDir)
@@ -209,7 +180,7 @@ function deleteSprite(spriteName) {
   })
 
   removeFromIndexFile(SPRITE_DATA_COPY_PATH, spriteName)
-  removedFiles.push(...toGitPaths(rmFiles))
+  removedFiles.push(...rmFiles)
 }
 
 function removeFromIndexFile(dir, spriteName) {
@@ -225,7 +196,7 @@ function removeFromIndexFile(dir, spriteName) {
   fileContents = fileContents.replace(importLine, '')
   fs.writeFileSync(indexFilePath, fileContents, 'utf8')
   if (oldContents === fileContents) return
-  removedFiles.push(...toGitPaths([indexFilePath]))
+  removedFiles.push(indexFilePath)
 }
 
 const spriteName = process.argv[2]
