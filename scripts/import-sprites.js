@@ -71,7 +71,11 @@ program
       deleteSprite(sprites)
     }
     if (options.commit) {
-      git.commit('remove', `Removed sprite ${spriteName}`)
+      const message =
+        Array.isArray(sprites) && sprites.length > 1
+          ? `Removed sprites ${sprites.join(', ')}`
+          : `Removed sprite ${sprites}`
+      git.commit('remove', message)
     }
   })
 program.parse(process.argv)
@@ -212,7 +216,7 @@ function deleteSprite(spriteName) {
   })
 
   removeFromIndexFile(SPRITE_DATA_COPY_PATH, spriteName)
-  git.add(...rmFiles)
+  git.add(rmFiles)
 }
 
 function removeFromIndexFile(dir, spriteName) {

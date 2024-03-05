@@ -16,8 +16,10 @@ import { capitalize } from './utils/string.js'
 import {
   findIndexFile,
   appendExportToIndexFile,
-  appendExportComponentToIndexFile
+  appendExportComponentToIndexFile,
+  removeImportFromIndexFile
 } from './utils/modules.js'
+import { deleteFolderAndContents } from './utils/fs.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.join(dirname(__filename), '..')
@@ -41,28 +43,50 @@ program
   .option('-at, --add-test', 'Add a test file')
   .option('-c, --commit', 'Commit changes to git')
   .action(function () {
-    if (this.args[0] === 'component') {
-      const name = this.args[1]
+    const fileType = this.args[0]
+    const fileName = this.args[1]
+    if (fileType === 'component') {
       const dir = this.opts().dir
       const addTest = this.opts().test || this.opts().addTest
-      createComponent(name, dir, addTest)
-    } else if (
-      this.args[0] === 'composable' ||
-      this.args[0] === 'style-composable'
-    ) {
-      const name = this.args[1]
+      createComponent(fileName, dir, addTest)
+    } else if (fileType === 'composable' || fileType === 'style-composable') {
       const dir = this.opts().dir
       const addTest = this.opts().test || this.opts().addTest
       const isStyle = this.args[0] === 'style-composable'
-      createComposable(name, dir, addTest, isStyle)
+      createComposable(fileName, dir, addTest, isStyle)
     }
 
     if (this.opts().commit) {
-      git.commit('add', `Created ${this.args[0]} ${this.args[1]}`)
+      git.commit('add', `Created ${fileType} ${fileName}`)
+    }
+  })
+
+program
+  .command('remove')
+  .argument('<type>', 'Component, composable or style composable')
+  .argument('<name>', 'name of the component')
+  .option('-d, --dir <dir>', 'directory to create the component in')
+  .option('-c, --commit', 'Commit changes to git')
+  .action(function () {
+    const fileType = this.args[0]
+    const fileName = this.args[1]
+    if (fileType === 'component') {
+      const dir = this.opts().dir
+      removeComponent(fileName, dir)
+    } else if (fileType === 'composable' || fileType === 'style-composable') {
+      const dir = this.opts().dir
+      removeComposable(fileName, dir)
+    }
+
+    if (this.opts().commit) {
+      git.commit('remove', `Removed ${fileType} ${fileName}`)
     }
   })
 
 program.parse(process.argv)
+
+////////////////////////////////////////
+//COMPONENTS
 
 function generateComponentPaths(name, dir) {
   const componentName = capitalize(name)
@@ -114,6 +138,16 @@ function createComponent(name, dir, addTest) {
   }
   git.add(paths.componentFolder)
 }
+
+function removeComponent(name, dir) {
+  const paths = generateComponentPaths(name, dir)
+  removeImportFromIndexFile(paths.componentPath, paths.componentName)
+  git.add(paths.componentFolder)
+  git.add(paths.moduleIndexFilePath)
+}
+
+////////////////////////////////////////
+//COMPOSABLES
 
 function generateComposablePaths(name, dir) {
   const composableName = capitalize(name)
@@ -182,4 +216,11 @@ function createComposable(name, dir, addTest, isStyle) {
     git.add(paths.moduleIndexFilePath)
   }
   git.add(paths.composableFolder)
+}
+
+function removeComposable(name, dir) {
+  const paths = generateComposablePaths(name, dir)
+  removeImportFromIndexFile(paths.composablePath, paths.composableFunctionName)
+  git.add(paths.composableFolder)
+  git.add(paths.moduleIndexFilePath)
 }

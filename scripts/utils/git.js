@@ -14,9 +14,10 @@ export class GitCommander {
     this._trackedFiles = []
   }
 
-  add(file) {
-    file = this._formatPath(file)
-    this._trackedFiles.push(file)
+  add(files) {
+    files = Array.isArray(files) ? files : [files]
+    const paths = files.map((file) => this._formatPath(file))
+    this._trackedFiles.push(...paths)
   }
 
   async commit(action, message) {

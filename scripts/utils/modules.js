@@ -27,20 +27,64 @@ export function appendToIndexFile(indexFilePath, exportText) {
   }
 }
 
-export function appendImportToIndexFile(asName, indexFileDir, importPath) {
+function createImportText(asName, importPath) {
   asName = asName ? ` as ${asName}` : ''
+  return `import *${asName} from '${importPath}'\n`
+}
+
+function createExportComponentText(componentName, componentPath) {
+  return `export { default as ${componentName} } from '${componentPath}'\n`
+}
+
+function createExportText(asName, exportPath) {
+  asName = asName ? ` as ${asName}` : ''
+  return `export *${asName} from '${exportPath}'\n`
+}
+
+function appendTextToIndexFile(
+  imortOrExportType,
+  asName,
+  indexFileDir,
+  staticPath
+) {
+  let appendText = ''
+  if (imortOrExportType === 'import') {
+    appendText = createImportText(asName, staticPath)
+  } else if (imortOrExportType === 'exportComponent') {
+    appendText = createExportComponentText(asName, staticPath)
+  } else if (imortOrExportType === 'export') {
+    appendText = createExportText(asName, staticPath)
+  }
   const indexFile = findIndexFile(indexFileDir) || createIndexFile(indexFileDir)
-  const importText = `import *${asName} from '${importPath}'\n`
-  appendToIndexFile(indexFile, importText)
+  appendToIndexFile(indexFile, appendText)
   return indexFile
 }
 
+function removeTextFromIndexFile(
+  imortOrExportType,
+  asName,
+  indexFileDir,
+  staticPath
+) {
+  let removeText = ''
+  if (imortOrExportType === 'import') {
+    removeText = createImportText(asName, staticPath)
+  } else if (imortOrExportType === 'exportComponent') {
+    removeText = createExportComponentText(asName, staticPath)
+  } else if (imortOrExportType === 'export') {
+    removeText = createExportText(asName, staticPath)
+  }
+  const indexFile = findIndexFile(indexFileDir)
+  if (!indexFile) return
+  removeFromFile(indexFile, removeText)
+}
+
+export function appendImportToIndexFile(asName, indexFileDir, importPath) {
+  return appendTextToIndexFile('import', asName, indexFileDir, importPath)
+}
+
 export function appendExportToIndexFile(asName, indexFileDir, exportPath) {
-  asName = asName ? ` as ${asName}` : ''
-  const indexFile = findIndexFile(indexFileDir) || createIndexFile(indexFileDir)
-  const exportText = `export *${asName} from '${exportPath}'\n`
-  appendToIndexFile(indexFile, exportText)
-  return indexFile
+  return appendTextToIndexFile('export', asName, indexFileDir, exportPath)
 }
 
 export function appendExportComponentToIndexFile(
@@ -48,8 +92,41 @@ export function appendExportComponentToIndexFile(
   indexFileDir,
   componentPath
 ) {
-  const indexFile = findIndexFile(indexFileDir) || createIndexFile(indexFileDir)
-  const exportText = `export { default as ${componentName} } from '${componentPath}'\n`
-  appendToIndexFile(indexFile, exportText)
-  return indexFile
+  return appendTextToIndexFile(
+    'exportComponent',
+    componentName,
+    indexFileDir,
+    componentPath
+  )
+}
+
+export function removeImportFromIndexFile(asName, indexFileDir, importPath) {
+  removeTextFromIndexFile('import', asName, indexFileDir, importPath)
+}
+
+export function removeExportFromIndexFile(asName, indexFileDir, exportPath) {
+  removeTextFromIndexFile('export', asName, indexFileDir, exportPath)
+}
+
+export function removeExportComponentFromIndexFile(
+  componentName,
+  indexFileDir,
+  componentPath
+) {
+  removeTextFromIndexFile(
+    'exportComponent',
+    componentName,
+    indexFileDir,
+    componentPath
+  )
+}
+
+export function removeFromFile(filePath, text) {
+  if (fs.existsSync(filePath)) {
+    let fileContents = fs.readFileSync(filePath, 'utf8')
+    const oldContents = fileContents
+    fileContents = fileContents.replace(text, '')
+    fs.writeFileSync(filePath, fileContents, 'utf8')
+    if (oldContents === fileContents) return
+  }
 }
