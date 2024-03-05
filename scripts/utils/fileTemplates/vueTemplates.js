@@ -40,13 +40,12 @@ export function composableStyleTemplate(name) {
     prop: string
   }
 
-  export const ${propsName}: ${interfaceName} = {
+  export const ${propsName} = {
     prop: {
       type: String,
       defaulr: 'My Prop'
     }
   }
-
   
   export function ${composableName} (props: ${interfaceName} ){
     const computedProp = computed(() => props.prop)
@@ -57,7 +56,7 @@ export function composableStyleTemplate(name) {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-      }
+      } as StyleValue
     })
 
     onMounted(() => {
@@ -75,7 +74,7 @@ export function composableTemplate(name) {
   name = capitalize(name)
   const interfaceName = `use${name}PropsInterface`
   const propsName = `${name}Props`
-  const composableName = `${name}`
+  const composableName = `use${name}`
 
   return `
   import {ref, computed,  onMounted, watch} from 'vue'
@@ -84,7 +83,7 @@ export function composableTemplate(name) {
     prop: string
   }
 
-  export const ${propsName}: ${interfaceName} = {
+  export const ${propsName} = {
     prop: {
       type: String,
       defaulr: 'My Prop'

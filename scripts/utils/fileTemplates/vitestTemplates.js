@@ -1,20 +1,21 @@
 import path from 'path'
 
 export function vitestTemplate(name, functions, testPath) {
-  functions = functions.join(',\n')
+  functions = Array.isArray(functions) ? functions : [functions]
   testPath = path.basename(testPath)
 
   const tests = functions.map((func) => {
     return `
-    it('It should ', () => {
-      const result = ${func}()
-      expect(result).toBe()
+    test('It should ', () => {
+      const props = {}
+      const result = ${func}(props)
+      expect(result).toBe(0)
     })
     `
   })
 
   const template = `
-  import {describe, it expect} from 'vitest'
+  import {describe, test, expect} from 'vitest'
   import{
     ${functions}
   } from './${testPath}'

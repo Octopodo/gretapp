@@ -38,16 +38,24 @@ program
   .argument('<type>', 'Component, composable or style composable')
   .argument('<name>', 'name of the component')
   .option('-d, --dir <dir>', 'directory to create the component in')
-  .option('-t, --test,  --add-test', 'Add a test file')
+  .option('-t, --test', 'Add a test file')
+  .option('-at, --add-test', 'Add a test file')
   .option('-c, --commit', 'Commit changes to git')
   .action(function () {
     if (this.args[0] === 'component') {
-      createComponent(this.args[1], this.opts().dir)
+      const name = this.args[1]
+      const dir = this.opts().dir
+      const addTest = this.opts().test || this.opts().addTest
+      createComponent(name, dir, addTest)
     } else if (
       this.args[0] === 'composable' ||
       this.args[0] === 'style-composable'
     ) {
-      createComposable(this.args[1], this.opts().dir)
+      const name = this.args[1]
+      const dir = this.opts().dir
+      const addTest = this.opts().test || this.opts().addTest
+      const isStyle = this.args[0] === 'style-composable'
+      createComposable(name, dir, addTest, isStyle)
     }
 
     if (this.opts().commit) {
@@ -57,7 +65,7 @@ program
 
 program.parse(process.argv)
 
-function createComponent(name, dir) {
+function generateComponentPaths(name, dir) {
   const componentName = capitalize(name)
   const componentPath = dir ? path.join(COMPONENTS_PATH, dir) : COMPONENTS_PATH
   const componentStaticPath = `./${componentName}.vue`
@@ -65,32 +73,50 @@ function createComponent(name, dir) {
   const componentFilePath = path.join(componentFolder, `${componentName}.vue`)
   const testFilePath = path.join(componentFolder, `${componentName}.spec.ts`)
   const moduleIndexFilePath = findIndexFile(componentPath)
-  const componentFileTemplate = componentTemplate(componentName)
 
-  if (fs.existsSync(componentFolder) && fs.existsSync(componentFilePath)) {
-    console.error(`Component ${componentName} already exists`)
+  return {
+    componentName,
+    componentPath,
+    componentStaticPath,
+    componentFolder,
+    componentFilePath,
+    testFilePath,
+    moduleIndexFilePath
+  }
+}
+
+function createComponent(name, dir, addTest) {
+  const paths = generateComponentPaths(name, dir)
+
+  if (
+    fs.existsSync(paths.componentFolder) &&
+    fs.existsSync(paths.componentFilePath)
+  ) {
+    console.error(`Component ${paths.componentName} already exists`)
     process.exit(1)
   }
 
-  fs.mkdirSync(componentFolder, { recursive: true })
-  fs.writeFileSync(componentFilePath, componentFileTemplate)
-  if (program.opts().test) {
-    fs.writeFileSync(testFilePath, vitestTemplate(componentName))
+  fs.mkdirSync(paths.componentFolder, { recursive: true })
+  fs.writeFileSync(paths.componentFilePath, paths.componentFileTemplate)
+
+  //Implement component test file creation
+  if (addTest) {
+    // fs.writeFileSync(paths.testFilePath, vitestTemplate(paths.componentName))
   }
 
   appendExportComponentToIndexFile(
-    componentName,
-    componentFolder,
-    componentStaticPath
+    paths.componentName,
+    paths.componentFolder,
+    paths.componentStaticPath
   )
-  if (moduleIndexFilePath) {
-    appendExportToIndexFile(componentName, componentPath, `./${componentName}`)
-    modifiedFiles.push(moduleIndexFilePath)
+  if (paths.moduleIndexFilePath) {
+    appendExportToIndexFile('', paths.componentPath, `./${paths.componentName}`)
+    modifiedFiles.push(paths.moduleIndexFilePath)
   }
-  modifiedFiles.push(componentFolder)
+  modifiedFiles.push(paths.componentFolder)
 }
 
-function createComposable(name, dir) {
+function generateComposablePaths(name, dir) {
   const composableName = capitalize(name)
   const composableFunctionName = `use${composableName}`
   const composablePath = dir
@@ -106,26 +132,55 @@ function createComposable(name, dir) {
     `${composableFunctionName}.spec.ts`
   )
   const moduleIndexFilePath = findIndexFile(composablePath)
-  const composableFileTemplate =
-    program.opts().type === 'style-composable'
-      ? composableStyleTemplate(composableName)
-      : composableTemplate(composableName)
 
-  if (fs.existsSync(composableFolder)) {
-    console.error(`Composable ${composableName} already exists`)
+  return {
+    composableName,
+    composableFunctionName,
+    composablePath,
+    composableFolder,
+    composableFilePath,
+    testFilePath,
+    moduleIndexFilePath
+  }
+}
+
+function createComposable(name, dir, addTest, isStyle) {
+  const paths = generateComposablePaths(name, dir)
+  const template = isStyle ? composableStyleTemplate : composableTemplate
+  const composableFileTemplate = template(paths.composableName)
+  if (
+    fs.existsSync(paths.composableFolder) &&
+    fs.existsSync(paths.composableFilePath)
+  ) {
+    console.error(`Composable ${paths.composableName} already exists`)
     process.exit(1)
   }
 
-  fs.mkdirSync(composableFolder, { recursive: true })
-  fs.writeFileSync(composableFilePath, composableFileTemplate)
-  if (program.opts().test) {
-    fs.writeFileSync(testFilePath, vitestTemplate(composableFunctionName))
+  fs.mkdirSync(paths.composableFolder, { recursive: true })
+  fs.writeFileSync(paths.composableFilePath, composableFileTemplate)
+  if (addTest) {
+    fs.writeFileSync(
+      paths.testFilePath,
+      vitestTemplate(
+        paths.composableFunctionName,
+        paths.composableFunctionName,
+        paths.composableFolder
+      )
+    )
   }
 
-  appendExportToIndexFile(composableName, composableFolder)
-  if (moduleIndexFilePath) {
-    appendExportToIndexFile(composableName, `./${composablePath}`)
-    modifiedFiles.push(moduleIndexFilePath)
+  appendExportToIndexFile(
+    '',
+    paths.composableFolder,
+    `./${paths.composableFunctionName}`
+  )
+  if (paths.moduleIndexFilePath) {
+    appendExportToIndexFile(
+      '',
+      `./${paths.composablePath}`,
+      `./${paths.composableFunctionName}`
+    )
+    modifiedFiles.push(paths.moduleIndexFilePath)
   }
-  modifiedFiles.push(composableFolder)
+  modifiedFiles.push(paths.composableFolder)
 }
