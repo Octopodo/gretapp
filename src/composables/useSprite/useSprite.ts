@@ -33,7 +33,9 @@ export const useSprite = (
   //Implement multi file support
 
   const sprite = ref(new HarmonySprite(name.value))
-  const src = computed(() => sprite.value.src)
+  const src = computed(() => {
+    return `${process.env.VITE_BASE_URL}${sprite.value.src}`
+  })
   const maxHeigth = ref(sprite.value.maxHeight)
   const maxWidth = ref(sprite.value.maxWidth)
   const currentAnimation = computed(() => sprite.value.currentAnimation)
