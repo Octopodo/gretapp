@@ -31,9 +31,9 @@ export const useSprite = (
   const name = computed(() => props.name)
 
   //Implement multi file support
-  const src = computed(() => `gretapp/assets/sprites/${name.value}-1.png`)
 
   const sprite = ref(new HarmonySprite(name.value))
+  const src = computed(() => sprite.value.src)
   const maxHeigth = ref(sprite.value.maxHeight)
   const maxWidth = ref(sprite.value.maxWidth)
   const currentAnimation = computed(() => sprite.value.currentAnimation)

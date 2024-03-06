@@ -14,17 +14,12 @@ interface SpriteFrame {
   scaleY: number
 }
 
-interface SpriteAnimation {
-  name: string
-  frames: SpriteFrame[]
-  frameRate: number
-}
-
 export class HarmonySprite extends Sprite {
   constructor(name: string) {
     super()
     const spriteName = name as keyof typeof Sprites
     const sprite = Sprites[spriteName]
+    this._src = sprite.paths[0]
     this._frames = this.generateFrames(
       //At the moment we only have one spritesheet.
       //In the future, maybe we will have to iterate over all the spritesheets.

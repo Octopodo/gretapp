@@ -5,6 +5,7 @@ export abstract class Sprite {
   protected _currentAnimation: any
   protected _maxHeight: number
   protected _maxWidth: number
+  protected _src: string
 
   constructor() {
     this._animations = []
@@ -12,6 +13,8 @@ export abstract class Sprite {
     this._animationNames = []
     this._currentAnimation = {}
     this._maxHeight = 0
+    this._maxWidth = 0
+    this._src = ''
   }
 
   get animations() {
@@ -28,6 +31,9 @@ export abstract class Sprite {
 
   get maxWidth() {
     return Math.max(...this._frames.map((f: any) => f.width))
+  }
+  get src() {
+    return this._src
   }
 
   set currentAnimation(name: string) {
