@@ -12,7 +12,7 @@
     "type-check": "vue-tsc --build --force",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "format": "prettier --write src/",
-    "create": "node ./scripts/create-components.js create",
+    "kt": "node ./scripts/create-components.js kt",
     "remove": "node ./scripts/create-components.js remove",
     "import-sprites": "node ./scripts/import-sprites.js import-sprites --commit",
     "delete-sprites": "node ./scripts/import-sprites.js delete-sprites --commit",
