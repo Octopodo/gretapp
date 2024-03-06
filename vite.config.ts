@@ -15,5 +15,6 @@ export default defineConfig({
   build: {
     outDir: 'docs'
   },
-  base: process.env.VITE_BASE_URL || '/'
+  base: '/gretapp/'
+  // base: process.env.VITE_BASE_URL || '/'
 })
