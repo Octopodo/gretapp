@@ -21,7 +21,7 @@ export function createIndexFile(dirPath, replace = false) {
 export function appendToIndexFile(indexFilePath, exportText) {
   if (fs.existsSync(indexFilePath)) {
     const currentContent = fs.readFileSync(indexFilePath, 'utf8')
-    if (!currentContent.includes(exportText)) {
+    if (!findText(currentContent, exportText)) {
       fs.appendFileSync(indexFilePath, exportText + '\n')
     }
   }
@@ -125,8 +125,21 @@ export function removeFromFile(filePath, text) {
   if (fs.existsSync(filePath)) {
     let fileContents = fs.readFileSync(filePath, 'utf8')
     const oldContents = fileContents
-    fileContents = fileContents.replace(text, '\n')
+    const textToRemove = createMatchText(text)
+    if (!findText(fileContents, text)) return
+    fileContents = fileContents.replace(textToRemove, '')
     if (oldContents === fileContents) return
     fs.writeFileSync(filePath, fileContents, 'utf8')
   }
+}
+
+function findText(originalText, textToFind) {
+  const text = originalText
+  const textToFindRegex = createMatchText(textToFind)
+  return text.match(textToFindRegex)?.length
+}
+
+function createMatchText(text) {
+  const escapedText = text.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
+  return new RegExp(`${escapedText}\r?\n?`, 'g')
 }
