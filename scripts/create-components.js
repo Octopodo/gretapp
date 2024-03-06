@@ -17,7 +17,8 @@ import {
   findIndexFile,
   appendExportToIndexFile,
   appendExportComponentToIndexFile,
-  removeImportFromIndexFile
+  removeImportFromIndexFile,
+  removeExportFromIndexFile
 } from './utils/modules.js'
 import { deleteFolderAndContents } from './utils/fs.js'
 
@@ -30,197 +31,254 @@ const COMPOSABLES_STATIC_PATH = 'src/composables'
 const COMPONENTS_PATH = path.join(__dirname, COMPONENTS_STATIC_PATH)
 const COMPOSABLES_PATH = path.join(__dirname, COMPOSABLES_STATIC_PATH)
 
+const VALID_ACTIONS = ['create', 'remove']
+const VALID_TYPES = ['component', 'composable', 'style-composable']
 program
   .version('1.0.0')
   .description('Create Vue components and composables  and index them')
 
 program
-  .command('create')
+  .command('kt')
+  .argument('<action>', 'create or remove')
   .argument('<type>', 'Component, composable or style composable')
   .argument('<name>', 'name of the component')
   .option('-d, --dir <dir>', 'directory to create the component in')
   .option('-t, --test', 'Add a test file')
   .option('-at, --add-test', 'Add a test file')
   .option('-c, --commit', 'Commit changes to git')
-  .action(function () {
-    const fileType = this.args[0]
-    const fileName = this.args[1]
-    if (fileType === 'component') {
-      const dir = this.opts().dir
-      const addTest = this.opts().test || this.opts().addTest
-      createComponent(fileName, dir, addTest)
-    } else if (fileType === 'composable' || fileType === 'style-composable') {
-      const dir = this.opts().dir
-      const addTest = this.opts().test || this.opts().addTest
-      const isStyle = this.args[0] === 'style-composable'
-      createComposable(fileName, dir, addTest, isStyle)
+  .action(function (action, type, name, opts) {
+    if (!VALID_ACTIONS.includes(action)) {
+      console.error(`Invalid action: ${action}`)
+      process.exit(1)
+    }
+    if (!VALID_TYPES.includes(type)) {
+      console.error(`Invalid type: ${type}`)
+      process.exit(1)
+    }
+
+    if (!name) {
+      console.error('Name is required')
+      process.exit(1)
+    }
+
+    const dir = this.opts().dir
+    const addTest = this.opts().test || this.opts().addTest
+    if (action === 'create') {
+      create(name, dir, type, addTest)
+    } else if (action === 'remove') {
+      remove(name, dir, type)
     }
 
     if (this.opts().commit) {
-      git.commit('add', `Created ${fileType} ${fileName}`)
-    }
-  })
-
-program
-  .command('remove')
-  .argument('<type>', 'Component, composable or style composable')
-  .argument('<name>', 'name of the component')
-  .option('-d, --dir <dir>', 'directory to create the component in')
-  .option('-c, --commit', 'Commit changes to git')
-  .action(function () {
-    const fileType = this.args[0]
-    const fileName = this.args[1]
-    if (fileType === 'component') {
-      const dir = this.opts().dir
-      removeComponent(fileName, dir)
-    } else if (fileType === 'composable' || fileType === 'style-composable') {
-      const dir = this.opts().dir
-      removeComposable(fileName, dir)
-    }
-
-    if (this.opts().commit) {
-      git.commit('remove', `Removed ${fileType} ${fileName}`)
+      git.commit('add', `Created ${type} ${name}`)
     }
   })
 
 program.parse(process.argv)
 
 ////////////////////////////////////////
-//COMPONENTS
+//ACTIONS
+
+function create(name, dir, type, addTest) {
+  const actions = getActions(type)
+  if (!actions.export || !actions.paths) {
+    console.error('Invalid type')
+    process.exit(1)
+  }
+  const paths = actions.paths(name, dir)
+  const itemFileTemplate = actions.template(paths.itemName)
+  if (fs.existsSync(paths.itemFolder) && fs.existsSync(paths.itemFilePath)) {
+    console.error(`${capitalize(type)} ${paths.itemName} already exists`)
+    process.exit(1)
+  }
+
+  fs.mkdirSync(paths.itemFolder, { recursive: true })
+  fs.writeFileSync(paths.itemFilePath, itemFileTemplate)
+
+  //Implement component test file creation
+  if (addTest) {
+    actions.test(paths)
+  }
+
+  actions.export(paths)
+  git.add(paths.itemFolder)
+}
 
 function generateComponentPaths(name, dir) {
-  const componentName = capitalize(name)
-  const componentPath = dir ? path.join(COMPONENTS_PATH, dir) : COMPONENTS_PATH
-  const componentStaticPath = `./${componentName}.vue`
-  const componentFolder = path.join(componentPath, componentName)
-  const componentFilePath = path.join(componentFolder, `${componentName}.vue`)
-  const testFilePath = path.join(componentFolder, `${componentName}.spec.ts`)
-  const moduleIndexFilePath = findIndexFile(componentPath)
+  const itemName = capitalize(name)
+  const itemPath = dir ? path.join(COMPONENTS_PATH, dir) : COMPONENTS_PATH
+  const itemStaticPath = `./${itemName}.vue`
+  const itemFolder = path.join(itemPath, itemName)
+  const itemFilePath = path.join(itemFolder, `${itemName}.vue`)
+  const testFilePath = path.join(itemFolder, `${itemName}.spec.ts`)
+  const moduleIndexFilePath = findIndexFile(itemPath)
 
   return {
-    componentName,
-    componentPath,
-    componentStaticPath,
-    componentFolder,
-    componentFilePath,
+    itemName,
+    itemPath,
+    itemStaticPath,
+    itemFolder,
+    itemFilePath,
     testFilePath,
     moduleIndexFilePath
   }
 }
 
-function createComponent(name, dir, addTest) {
-  const paths = generateComponentPaths(name, dir)
+function generateComposablePaths(name, dir) {
+  const itemName = capitalize(name)
+  const itemFunctionName = `use${itemName}`
+  const itemPath = dir ? path.join(COMPOSABLES_PATH, dir) : COMPOSABLES_PATH
+  const itemFolder = path.join(itemPath, itemFunctionName)
+  const itemFilePath = path.join(itemFolder, `${itemFunctionName}.ts`)
+  const testFilePath = path.join(itemFolder, `${itemFunctionName}.spec.ts`)
+  const moduleIndexFilePath = findIndexFile(itemPath)
 
-  if (
-    fs.existsSync(paths.componentFolder) &&
-    fs.existsSync(paths.componentFilePath)
-  ) {
-    console.error(`Component ${paths.componentName} already exists`)
-    process.exit(1)
+  return {
+    itemName,
+    itemFunctionName,
+    itemPath,
+    itemFolder,
+    itemFilePath,
+    testFilePath,
+    moduleIndexFilePath
   }
+}
 
-  fs.mkdirSync(paths.componentFolder, { recursive: true })
-  fs.writeFileSync(paths.componentFilePath, paths.componentFileTemplate)
+function isComposable(type) {
+  return type === 'composable' || type === 'style-composable'
+}
 
-  //Implement component test file creation
-  if (addTest) {
-    // fs.writeFileSync(paths.testFilePath, vitestTemplate(paths.componentName))
+function isComponent(type) {
+  return type === 'component'
+}
+
+function getActions(type) {
+  const generators = {}
+
+  if (isComponent(type)) {
+    generators.paths = generateComponentPaths
+    generators.export = exportComponent
+    generators.template = componentTemplate
+    generators.test = createComponentTest
+  } else if (isComposable(type)) {
+    generators.paths = generateComposablePaths
+    generators.export = exportComposable
+    generators.template =
+      type === 'composable' ? composableTemplate : composableStyleTemplate
+    generators.test = createComposableTest
   }
+  return generators
+}
 
+function createComposableTest(paths) {
+  fs.writeFileSync(
+    paths.testFilePath,
+    vitestTemplate(
+      paths.itemFunctionName,
+      paths.itemFunctionName,
+      paths.itemFolder
+    )
+  )
+}
+
+function createComponentTest(paths) {}
+
+function exportComponent(paths) {
   appendExportComponentToIndexFile(
-    paths.componentName,
-    paths.componentFolder,
-    paths.componentStaticPath
+    paths.itemName,
+    paths.itemFolder,
+    paths.itemStaticPath
   )
   if (paths.moduleIndexFilePath) {
-    appendExportToIndexFile('', paths.componentPath, `./${paths.componentName}`)
+    appendExportToIndexFile('', paths.itemPath, `./${paths.itemName}`)
     git.add(paths.moduleIndexFilePath)
   }
-  git.add(paths.componentFolder)
 }
 
-function removeComponent(name, dir) {
-  const paths = generateComponentPaths(name, dir)
-  removeImportFromIndexFile(paths.componentPath, paths.componentName)
-  git.add(paths.componentFolder)
-  git.add(paths.moduleIndexFilePath)
+function exportComposable(paths) {
+  appendExportToIndexFile(
+    '',
+    paths.composablePath,
+    `./${paths.itemFunctionName}`
+  )
+  if (paths.moduleIndexFilePath) {
+    appendExportToIndexFile('', paths.itemPath, `./${paths.itemFunctionName}`)
+    git.add(paths.moduleIndexFilePath)
+  }
+  git.add(paths.itemFolder)
 }
+
+// function removeComponent(name, dir) {
+//   const paths = generateComponentPaths(name, dir)
+//   removeExportFromIndexFile('', paths.componentPath, paths.componentName)
+//   deleteFolderAndContents(paths.componentFolder)
+//   git.add(paths.componentFolder)
+//   git.add(paths.moduleIndexFilePath)
+// }
 
 ////////////////////////////////////////
 //COMPOSABLES
 
-function generateComposablePaths(name, dir) {
-  const composableName = capitalize(name)
-  const composableFunctionName = `use${composableName}`
-  const composablePath = dir
-    ? path.join(COMPOSABLES_PATH, dir)
-    : COMPOSABLES_PATH
-  const composableFolder = path.join(composablePath, composableFunctionName)
-  const composableFilePath = path.join(
-    composableFolder,
-    `${composableFunctionName}.ts`
-  )
-  const testFilePath = path.join(
-    composableFolder,
-    `${composableFunctionName}.spec.ts`
-  )
-  const moduleIndexFilePath = findIndexFile(composablePath)
+// function createComposable(name, dir, addTest, isStyle) {
+//   const paths = generateComposablePaths(name, dir)
+//   const template = isStyle ? composableStyleTemplate : composableTemplate
+//   const composableFileTemplate = template(paths.composableName)
+//   if (
+//     fs.existsSync(paths.composableFolder) &&
+//     fs.existsSync(paths.composableFilePath)
+//   ) {
+//     console.error(`Composable ${paths.composableName} already exists`)
+//     process.exit(1)
+//   }
 
-  return {
-    composableName,
-    composableFunctionName,
-    composablePath,
-    composableFolder,
-    composableFilePath,
-    testFilePath,
-    moduleIndexFilePath
-  }
-}
+//   fs.mkdirSync(paths.composableFolder, { recursive: true })
+//   fs.writeFileSync(paths.composableFilePath, composableFileTemplate)
+//   if (addTest) {
+//     fs.writeFileSync(
+//       paths.testFilePath,
+//       vitestTemplate(
+//         paths.composableFunctionName,
+//         paths.composableFunctionName,
+//         paths.composableFolder
+//       )
+//     )
+//   }
 
-function createComposable(name, dir, addTest, isStyle) {
-  const paths = generateComposablePaths(name, dir)
-  const template = isStyle ? composableStyleTemplate : composableTemplate
-  const composableFileTemplate = template(paths.composableName)
-  if (
-    fs.existsSync(paths.composableFolder) &&
-    fs.existsSync(paths.composableFilePath)
-  ) {
-    console.error(`Composable ${paths.composableName} already exists`)
-    process.exit(1)
-  }
+//   appendExportToIndexFile(
+//     '',
+//     paths.composableFolder,
+//     `./${paths.composableFunctionName}`
+//   )
+//   if (paths.moduleIndexFilePath) {
+//     appendExportToIndexFile(
+//       '',
+//       `./${paths.composablePath}`,
+//       `./${paths.composableFunctionName}`
+//     )
+//     git.add(paths.moduleIndexFilePath)
+//   }
+//   git.add(paths.composableFolder)
+// }
 
-  fs.mkdirSync(paths.composableFolder, { recursive: true })
-  fs.writeFileSync(paths.composableFilePath, composableFileTemplate)
-  if (addTest) {
-    fs.writeFileSync(
-      paths.testFilePath,
-      vitestTemplate(
-        paths.composableFunctionName,
-        paths.composableFunctionName,
-        paths.composableFolder
-      )
-    )
-  }
+// function removeComposable(name, dir) {
+//   const paths = generateComposablePaths(name, dir)
+//   const staticPath = `./${paths.composableFunctionName}`
+//   removeExportFromIndexFile('', paths.composablePath, staticPath)
+//   deleteFolderAndContents(paths.composableFolder)
+//   git.add(paths.composableFolder)
+//   git.add(paths.moduleIndexFilePath)
+// }
 
-  appendExportToIndexFile(
-    '',
-    paths.composableFolder,
-    `./${paths.composableFunctionName}`
-  )
-  if (paths.moduleIndexFilePath) {
-    appendExportToIndexFile(
-      '',
-      `./${paths.composablePath}`,
-      `./${paths.composableFunctionName}`
-    )
-    git.add(paths.moduleIndexFilePath)
-  }
-  git.add(paths.composableFolder)
-}
-
-function removeComposable(name, dir) {
-  const paths = generateComposablePaths(name, dir)
-  removeImportFromIndexFile(paths.composablePath, paths.composableFunctionName)
-  git.add(paths.composableFolder)
+function remove(name, dir, type) {
+  const pathGenerator =
+    type === 'component' ? generateComponentPaths : generateComposablePaths
+  const paths = pathGenerator(name, dir)
+  name = isComposable(type) ? paths.itemFunctionName : paths.itemName
+  const staticPath = isComposable(type)
+    ? `./${paths.itemFunctionName}`
+    : `./${paths.itemName}`
+  removeExportFromIndexFile('', paths.itemPath, staticPath)
+  deleteFolderAndContents(paths.itemFolder)
+  git.add(paths.itemFolder)
   git.add(paths.moduleIndexFilePath)
 }

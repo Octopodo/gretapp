@@ -34,6 +34,10 @@ export class GitCommander {
     }
   }
 
+  staticPath(filePath) {
+    return this._formatPath(filePath)
+  }
+
   _formatPath(filePath) {
     const rootDir = path.resolve(__dirname, '..')
     let relativePath = path.relative(rootDir, filePath)

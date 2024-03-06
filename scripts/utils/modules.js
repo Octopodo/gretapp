@@ -22,23 +22,23 @@ export function appendToIndexFile(indexFilePath, exportText) {
   if (fs.existsSync(indexFilePath)) {
     const currentContent = fs.readFileSync(indexFilePath, 'utf8')
     if (!currentContent.includes(exportText)) {
-      fs.appendFileSync(indexFilePath, exportText)
+      fs.appendFileSync(indexFilePath, exportText + '\n')
     }
   }
 }
 
 function createImportText(asName, importPath) {
   asName = asName ? ` as ${asName}` : ''
-  return `import *${asName} from '${importPath}'\n`
+  return `import *${asName} from '${importPath}'`
 }
 
 function createExportComponentText(componentName, componentPath) {
-  return `export { default as ${componentName} } from '${componentPath}'\n`
+  return `export { default as ${componentName} } from '${componentPath}'`
 }
 
 function createExportText(asName, exportPath) {
   asName = asName ? ` as ${asName}` : ''
-  return `export *${asName} from '${exportPath}'\n`
+  return `export *${asName} from '${exportPath}'`
 }
 
 function appendTextToIndexFile(
@@ -125,8 +125,8 @@ export function removeFromFile(filePath, text) {
   if (fs.existsSync(filePath)) {
     let fileContents = fs.readFileSync(filePath, 'utf8')
     const oldContents = fileContents
-    fileContents = fileContents.replace(text, '')
-    fs.writeFileSync(filePath, fileContents, 'utf8')
+    fileContents = fileContents.replace(text, '\n')
     if (oldContents === fileContents) return
+    fs.writeFileSync(filePath, fileContents, 'utf8')
   }
 }
